@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/30167842/README.md)
+[README.md](https://github.com/user-attachments/files/30169536/README.md)
 # GYMPLUS · Plataforma
 
 Plataforma de acompanhamento de clientes (jornada semanal, financeiro,
@@ -17,13 +17,35 @@ dados são gravados no banco e o login é de verdade.
 ## O que já funciona de ponta a ponta
 
 - Login real por e-mail/senha, com 3 papéis: **admin**, **consultor** e **cliente**.
-- Cadastro de clientes (cria automaticamente o login do cliente).
 - Jornada semanal, plano de ação (editável pelo admin), progresso, status de atividade/financeiro.
 - Formulário semanal do cliente (com upload de evidências) — libera a próxima semana automaticamente.
-- Ficha de contrato (link de cadastro, dados da empresa e pagamento).
 - Automações (regras de disparo) — criar, ativar/desativar.
 - Financeiro (situação por cliente + checklist de cobrança).
 - Auditoria (pasta por cliente com o histórico de formulários e anotações).
+
+### Fluxo completo de onboarding do cliente
+
+1. **Admin cadastra o cliente** (nome, e-mail, WhatsApp, plano, consultor). A
+   plataforma manda um e-mail com um link **público** (sem precisar de
+   login) para o cliente preencher os dados do contrato (responsável
+   legal, CPF, nome/CNPJ da academia, endereço, cargo, etc.).
+2. O cliente preenche o link e os dados aparecem, em modo somente
+   leitura, no card "Dados para o contrato" na página do projeto do
+   cliente (visão do admin/consultor).
+3. Seu time gera o contrato manualmente (fora da plataforma) com esses
+   dados. Depois de assinado, o admin clica em **"Aprovar contrato"**.
+4. Isso libera automaticamente o login do cliente (e-mail com usuário e
+   senha temporária) e agenda, para **3 minutos depois**, um segundo
+   e-mail com o link do **formulário de Raio-X** (diagnóstico de
+   marketing, vendas e evasão do negócio, com upload de arquivos).
+5. Depois que o cliente envia o Raio-X, o consultor/admin pode abrir o
+   **Diagnóstico** (visão só interna, nunca enviada ao cliente) para
+   levar para a reunião de onboarding.
+6. A partir daí segue a jornada semanal normal: cada tarefa só libera a
+   próxima depois que o cliente preenche o formulário da semana atual.
+
+O atraso de 3 minutos do e-mail do Raio-X é real (não simulado) — feito
+com `pg_cron` no Supabase, explicado no passo 3 abaixo.
 
 ## O que **não** é real (fica para uma próxima etapa, se quiser)
 
@@ -46,6 +68,30 @@ dados são gravados no banco e o login é de verdade.
    conteúdo inteiro e clique em **Run**. Isso cria todas as tabelas, as
    regras de segurança (RLS) e os dados iniciais (plano de 12 semanas,
    checklist de cobrança e automações padrão).
+
+> **Já tem um projeto Supabase rodando de antes?** Não precisa rodar o
+> `supabase-schema.sql` inteiro de novo (ele é seguro rodar de novo, mas
+> não é necessário). Basta rodar só o trecho abaixo no **SQL Editor**,
+> que adiciona o que falta para o fluxo de onboarding novo:
+> ```sql
+> alter table public.clients add column if not exists cadastro_token uuid not null default gen_random_uuid();
+> alter table public.clients add column if not exists raiox jsonb not null default '{}'::jsonb;
+> alter table public.clients add column if not exists raiox_submitted_at timestamptz;
+>
+> create table if not exists public.scheduled_emails (
+>   id uuid primary key default gen_random_uuid(),
+>   client_id uuid not null references public.clients(id) on delete cascade,
+>   kind text not null,
+>   send_at timestamptz not null,
+>   sent boolean not null default false,
+>   sent_error text,
+>   created_at timestamptz not null default now()
+> );
+> alter table public.scheduled_emails enable row level security;
+> create policy "scheduled_emails_staff" on public.scheduled_emails for select using (public.is_staff());
+> ```
+> Depois disso, siga o passo 3 (Edge Function) e o novo passo "Agendar o
+> e-mail do Raio-X (pg_cron)" mais abaixo.
 
 ### 2. Criar os usuários admin e consultor
 
@@ -89,10 +135,12 @@ o endereço de verdade da função é o que aparece na **URL** dela (ex.:
 pelo nome que estiver depois de `/v1/` na URL — confira se bate com o
 que está em `sb.functions.invoke('...')` no arquivo.
 
-#### E-mail de boas-vindas automático (login + senha do cliente)
+#### E-mails automáticos (link do contrato, login do cliente, Raio-X)
 
-Quando o admin cadastra um cliente novo, a plataforma manda um e-mail
-com o login e a senha, enviado pelo Gmail. Para ativar:
+A plataforma manda três e-mails automáticos ao longo do onboarding (link
+do formulário de contrato ao cadastrar o cliente, login/senha quando o
+admin aprova o contrato, e o link do Raio-X 3 minutos depois). Todos
+saem pelo Gmail. Para ativar:
 
 1. Na conta do Gmail que vai enviar os e-mails, ative a **verificação em
    duas etapas** (Conta Google → Segurança).
@@ -101,15 +149,57 @@ com o login e a senha, enviado pelo Gmail. Para ativar:
    Copie o código de 16 letras gerado.
 3. No Supabase, vá em **Edge Functions** → abra a função → aba
    **Settings** (ou **Secrets** / "Manage secrets", dependendo da versão
-   do painel) e adicione duas variáveis:
+   do painel) e adicione as variáveis:
    - `GMAIL_USER` = o e-mail que envia (ex.: `ssolucoesempresariais4@gmail.com`)
    - `GMAIL_APP_PASSWORD` = a senha de app de 16 letras do passo 2 (sem espaços)
+   - `SITE_URL` (opcional) = o link de produção do site, ex.:
+     `https://gymplusentrega.vercel.app` (usado nos e-mails). Se não
+     configurar, usa esse valor como padrão.
+   - `CRON_SECRET` (opcional, mas recomendado) = uma senha qualquer,
+     inventada por você, só para proteger o agendamento do e-mail do
+     Raio-X (explicado a seguir). Sem essa variável o agendamento ainda
+     funciona, só fica sem essa proteção extra.
 4. Sem precisar reimplantar nada — na próxima vez que um cliente for
-   cadastrado, o e-mail já sai automaticamente.
+   cadastrado/aprovado, os e-mails já saem automaticamente.
 
 Se essas variáveis não estiverem configuradas, o cliente ainda é criado
 normalmente; só o e-mail não é enviado (a plataforma avisa isso na tela
 e mostra a senha temporária para você repassar manualmente).
+
+#### Agendar o e-mail do Raio-X (pg_cron)
+
+O e-mail com o link do formulário de Raio-X é enviado **exatos 3
+minutos** depois que o admin aprova o contrato (atraso real, não
+simulado). Isso é feito com uma tarefa agendada (`pg_cron`) que roda a
+cada minuto e dispara os e-mails cujo horário já chegou. Depois de
+publicar a Edge Function (passo acima), rode no **SQL Editor**
+(trocando `SEU-PROJETO`, `SUA_ANON_KEY` e `SUA_CRON_SECRET` pelos
+valores do seu projeto — Project Settings > API — e pelo valor que você
+escolheu para `CRON_SECRET`, se configurou um):
+
+```sql
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+select cron.schedule(
+  'dispatch-scheduled-emails',
+  '* * * * *',
+  $$
+  select net.http_post(
+    url := 'https://SEU-PROJETO.supabase.co/functions/v1/smart-api',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer SUA_ANON_KEY", "x-cron-secret": "SUA_CRON_SECRET"}'::jsonb,
+    body := '{"action": "dispatch-scheduled-emails"}'::jsonb
+  );
+  $$
+);
+```
+
+Para conferir se está rodando: `select * from cron.job;`
+Para cancelar, se precisar: `select cron.unschedule('dispatch-scheduled-emails');`
+
+Se você não configurou `CRON_SECRET` no passo anterior, pode deixar o
+header `x-cron-secret` de fora (ou com qualquer valor) — a função só
+recusa a chamada quando o segredo está configurado e não bate.
 
 ### 4. Conectar o site ao seu projeto Supabase
 
