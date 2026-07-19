@@ -34,12 +34,30 @@
   .msym { font-family:'Material Symbols Rounded'; font-weight:normal; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; white-space:nowrap; word-wrap:normal; direction:ltr; -webkit-font-feature-settings:'liga'; -webkit-font-smoothing:antialiased; }
   @keyframes gpFade { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes gpPulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+  /* ---- responsivo / mobile ---- */
+  .gp-hamburger { display:none; }
+  .gp-overlay { display:none; }
+  .gp-table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  @media (max-width: 860px) {
+    .gp-login-outer { padding:16px !important; }
+    .gp-shell { flex-direction:column; height:auto !important; min-height:100vh; overflow:visible !important; }
+    .gp-sidebar { position:fixed !important; top:0; left:0; height:100vh; z-index:60; transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 0 rgba(0,0,0,0); }
+    .gp-sidebar.gp-open { transform:translateX(0); box-shadow:8px 0 30px rgba(0,0,0,.35); }
+    .gp-hamburger { display:flex !important; }
+    .gp-overlay.gp-open { display:block; position:fixed; inset:0; background:rgba(6,20,13,.5); z-index:55; }
+    .gp-main-header { padding:12px 16px !important; }
+    .gp-content { padding:16px 16px 40px !important; }
+    .gp-grid-2, .gp-grid-3, .gp-grid-4, .gp-grid-3col, .gp-grid-main-side, .gp-grid-auto, .gp-grid-auditoria { grid-template-columns:1fr !important; }
+    .gp-table-row { min-width:640px; }
+    .gp-header-title { font-size:19px !important; }
+  }
 </style>
 </helmet>
 
 <sc-if value="{{ notLoggedIn }}" hint-placeholder-val="{{ true }}">
-  <div style="height:100vh; display:flex; overflow:hidden; background:linear-gradient(140deg,#0d2a20 0%,#123328 55%,#0a2019 100%);">
-    <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px;">
+  <div style="height:100vh; display:flex; overflow:hidden; overflow-y:auto; background:linear-gradient(140deg,#0d2a20 0%,#123328 55%,#0a2019 100%);">
+    <div class="gp-login-outer" style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px;">
       <div style="width:100%; max-width:420px; animation:gpFade .4s ease;">
         <div style="display:flex; align-items:center; gap:13px; margin-bottom:30px;">
           <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#22c55e,#15803d); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(34,197,94,.4);"><span class="msym" style="font-size:28px; color:#06140d;">fitness_center</span></div>
@@ -50,7 +68,7 @@
           <h2 style="font-size:21px; font-weight:800; color:#16211c; letter-spacing:-.4px;">Acessar plataforma</h2>
           <p style="font-size:13px; color:#6b7c73; margin-top:3px; margin-bottom:20px;">Selecione seu perfil de acesso</p>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;">
+          <div class="gp-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;">
             <sc-for list="{{ loginRoles }}" as="r" hint-placeholder-count="2">
               <button sc-camel-on-click="{{ r.pick }}" style="{{ r.cardStyle }}">
                 <span class="msym" style="font-size:26px; color:{{ r.iconColor }};">{{ r.icon }}</span>
@@ -86,9 +104,10 @@
 </sc-if>
 
 <sc-if value="{{ isLoggedIn }}" hint-placeholder-val="">
-<div style="display:flex; height:100vh; overflow:hidden; background:#eef1ef;">
+<div class="gp-shell" style="display:flex; height:100vh; overflow:hidden; background:#eef1ef;">
 
-  <aside style="width:264px; flex-shrink:0; background:linear-gradient(180deg,#123328 0%,#0d2a20 100%); display:flex; flex-direction:column; color:#cfe6da;">
+  <div sc-camel-on-click="{{ closeMobileNav }}" class="gp-overlay{{ mobileNavOpenClass }}"></div>
+  <aside class="gp-sidebar{{ mobileNavOpenClass }}" style="width:264px; flex-shrink:0; background:linear-gradient(180deg,#123328 0%,#0d2a20 100%); display:flex; flex-direction:column; color:#cfe6da;">
     <div style="padding:22px 22px 18px; display:flex; align-items:center; gap:11px; border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,#22c55e,#15803d); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(34,197,94,.35);">
         <span class="msym" style="font-size:22px; color:#06140d;">fitness_center</span>
@@ -127,10 +146,11 @@
   </aside>
 
   <main style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-    <header style="flex-shrink:0; background:#fbfcfb; border-bottom:1px solid #e3e8e5; padding:16px 32px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+    <header class="gp-main-header" style="flex-shrink:0; background:#fbfcfb; border-bottom:1px solid #e3e8e5; padding:16px 32px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+      <button sc-camel-on-click="{{ toggleMobileNav }}" class="gp-hamburger" style="background:#123328; color:#fff; border:none; cursor:pointer; width:38px; height:38px; border-radius:10px; align-items:center; justify-content:center; flex-shrink:0;"><span class="msym" style="font-size:22px;">menu</span></button>
       <div style="flex:1; min-width:200px;">
         <div style="display:flex; align-items:center; gap:10px;">
-          <h1 style="font-size:23px; font-weight:800; letter-spacing:-.6px; color:#16211c;">{{ pageTitle }}</h1>
+          <h1 class="gp-header-title" style="font-size:23px; font-weight:800; letter-spacing:-.6px; color:#16211c;">{{ pageTitle }}</h1>
           <span class="msym" style="font-size:22px; color:#22c55e;">{{ pageIcon }}</span>
         </div>
         <p style="font-size:13px; color:#6b7c73; margin-top:2px;">{{ pageSubtitle }}</p>
@@ -152,13 +172,13 @@
       </button>
     </header>
 
-    <div style="flex:1; overflow-y:auto; padding:28px 32px 48px;">
+    <div class="gp-content" style="flex:1; overflow-y:auto; padding:28px 32px 48px;">
 
       <!-- ===================== DASHBOARD ===================== -->
       <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
         <div style="animation:gpFade .3s ease; max-width:1240px; margin:0 auto;">
           <sc-if value="{{ showDashExtras }}" hint-placeholder-val="{{ true }}">
-          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px;">
+          <div class="gp-grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px;">
             <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
               <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:18px 20px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
@@ -215,11 +235,12 @@
                 <button sc-camel-on-click="{{ openAddClient }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:800; padding:10px 16px; border-radius:11px; display:inline-flex; align-items:center; gap:7px; box-shadow:0 3px 10px rgba(34,197,94,.28);" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:18px;">person_add</span> Adicionar cliente</button>
               </div>
               </sc-if>
-              <div style="display:grid; grid-template-columns:2.2fr 1.4fr 1.1fr 1.1fr 1.6fr; padding:9px 22px; background:#f2f5f3; border-top:1px solid #e3e8e5; border-bottom:1px solid #e3e8e5; font-size:11px; font-weight:700; letter-spacing:.4px; color:#7c8b83;">
+              <div class="gp-table-scroll">
+              <div class="gp-table-row" style="display:grid; grid-template-columns:2.2fr 1.4fr 1.1fr 1.1fr 1.6fr; padding:9px 22px; background:#f2f5f3; border-top:1px solid #e3e8e5; border-bottom:1px solid #e3e8e5; font-size:11px; font-weight:700; letter-spacing:.4px; color:#7c8b83;">
                 <div>CLIENTE</div><div>JORNADA</div><div>ATIVIDADE</div><div>FINANCEIRO</div><div>PROGRESSO</div>
               </div>
               <sc-for list="{{ clients }}" as="c" hint-placeholder-count="6">
-                <div sc-camel-on-click="{{ c.open }}" style="display:grid; grid-template-columns:2.2fr 1.4fr 1.1fr 1.1fr 1.6fr; align-items:center; padding:14px 22px; border-bottom:1px solid #edf0ee; cursor:pointer;" style-hover="background:#f6f9f7;">
+                <div sc-camel-on-click="{{ c.open }}" class="gp-table-row" style="display:grid; grid-template-columns:2.2fr 1.4fr 1.1fr 1.1fr 1.6fr; align-items:center; padding:14px 22px; border-bottom:1px solid #edf0ee; cursor:pointer;" style-hover="background:#f6f9f7;">
                   <div style="display:flex; align-items:center; gap:12px;">
                     <div style="width:38px; height:38px; border-radius:10px; background:{{ c.avatarBg }}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff;">{{ c.initials }}</div>
                     <div style="line-height:1.3;">
@@ -238,6 +259,7 @@
                   </div>
                 </div>
               </sc-for>
+              </div>
             </div>
           </div>
         </sc-if></div>
@@ -310,7 +332,7 @@
           </div>
           </sc-if>
 
-          <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; align-items:start;">
+          <div class="gp-grid-main-side" style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; align-items:start;">
             <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:18px; padding:22px 24px;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
                 <span class="msym" style="font-size:22px; color:#16a34a;">route</span>
@@ -480,7 +502,7 @@
           <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px; color:#6b7c73; font-size:13px; font-weight:600;">
             <span class="msym" style="font-size:18px;">filter_list</span> Agrupado por status · todas as atividades da semana entre os clientes
           </div>
-          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:16px; align-items:start;">
+          <div class="gp-grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:16px; align-items:start;">
             <sc-for list="{{ boardColumns }}" as="col" hint-placeholder-count="4">
               <div style="background:#f2f5f3; border:1px solid #e3e8e5; border-radius:16px; padding:12px; min-height:200px;">
                 <div style="display:flex; align-items:center; gap:8px; padding:6px 8px 12px;">
@@ -532,7 +554,7 @@
                 <textarea value="{{ formText }}" sc-camel-on-input="{{ setFormText }}" placeholder="Descreva o que foi feito, decisões tomadas e resultados obtidos..." style="width:100%; min-height:120px; resize:vertical; border:1px solid #d5ddd8; border-radius:11px; padding:13px 15px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea>
               </div>
 
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="gp-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                   <label style="font-size:13px; font-weight:700; color:#16211c; display:block; margin-bottom:8px;">Nível de dificuldade</label>
                   <sc-raw-select value="{{ formDifficulty }}" sc-camel-on-change="{{ setFormDifficulty }}" style="width:100%; border:1px solid #d5ddd8; border-radius:11px; padding:12px 15px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
@@ -584,7 +606,7 @@
       <!-- ===================== FINANCEIRO ===================== -->
       <sc-if value="{{ isFinanceiro }}" hint-placeholder-val="">
         <div style="animation:gpFade .3s ease; max-width:1240px; margin:0 auto;">
-          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px;">
+          <div class="gp-grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px;">
             <sc-for list="{{ finStats }}" as="s" hint-placeholder-count="3">
               <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:18px 20px; display:flex; align-items:center; gap:16px;">
                 <div style="width:48px; height:48px; border-radius:13px; background:{{ s.iconBg }}; display:flex; align-items:center; justify-content:center;"><span class="msym" style="font-size:26px; color:{{ s.iconColor }};">{{ s.icon }}</span></div>
@@ -593,18 +615,20 @@
             </sc-for>
           </div>
 
-          <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; align-items:start;">
+          <div class="gp-grid-main-side" style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; align-items:start;">
             <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; overflow:hidden;">
               <div style="padding:18px 22px 14px; display:flex; align-items:center; gap:10px;"><span class="msym" style="font-size:22px; color:#16a34a;">receipt_long</span><h3 style="font-size:16px; font-weight:800; color:#16211c;">Situação por cliente</h3></div>
-              <div style="display:grid; grid-template-columns:2fr 1.2fr 1fr 1.2fr; padding:9px 22px; background:#f2f5f3; border-top:1px solid #e3e8e5; border-bottom:1px solid #e3e8e5; font-size:11px; font-weight:700; letter-spacing:.4px; color:#7c8b83;"><div>CLIENTE</div><div>MENSALIDADE</div><div>VENCIMENTO</div><div>STATUS</div></div>
+              <div class="gp-table-scroll">
+              <div class="gp-table-row" style="display:grid; grid-template-columns:2fr 1.2fr 1fr 1.2fr; padding:9px 22px; background:#f2f5f3; border-top:1px solid #e3e8e5; border-bottom:1px solid #e3e8e5; font-size:11px; font-weight:700; letter-spacing:.4px; color:#7c8b83;"><div>CLIENTE</div><div>MENSALIDADE</div><div>VENCIMENTO</div><div>STATUS</div></div>
               <sc-for list="{{ finClients }}" as="c" hint-placeholder-count="6">
-                <div style="display:grid; grid-template-columns:2fr 1.2fr 1fr 1.2fr; align-items:center; padding:13px 22px; border-bottom:1px solid #edf0ee;">
+                <div class="gp-table-row" style="display:grid; grid-template-columns:2fr 1.2fr 1fr 1.2fr; align-items:center; padding:13px 22px; border-bottom:1px solid #edf0ee;">
                   <div style="display:flex; align-items:center; gap:11px;"><div style="width:34px; height:34px; border-radius:9px; background:{{ c.avatarBg }}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#fff;">{{ c.initials }}</div><span style="font-size:14px; font-weight:700; color:#16211c;">{{ c.name }}</span></div>
                   <div style="font-size:14px; font-weight:700; color:#16211c;">{{ c.valor }}</div>
                   <div style="font-size:13px; color:#6b7c73; font-weight:600;">{{ c.vencimento }}</div>
                   <div><span style="font-size:11px; font-weight:700; padding:5px 11px; border-radius:20px; background:{{ c.financeiroBg }}; color:{{ c.financeiroColor }}; display:inline-flex; align-items:center; gap:5px;"><span class="msym" style="font-size:15px;">{{ c.financeiroIcon }}</span>{{ c.financeiroLabel }}</span></div>
                 </div>
               </sc-for>
+              </div>
             </div>
 
             <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:22px 24px;">
@@ -627,7 +651,7 @@
       <!-- ===================== AUDITORIA ===================== -->
       <sc-if value="{{ isAuditoria }}" hint-placeholder-val="">
         <div style="animation:gpFade .3s ease; max-width:1240px; margin:0 auto;">
-          <div style="display:grid; grid-template-columns:280px 1fr; gap:20px; align-items:start;">
+          <div class="gp-grid-auditoria" style="display:grid; grid-template-columns:280px 1fr; gap:20px; align-items:start;">
             <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:14px;">
               <div style="font-size:11px; font-weight:800; letter-spacing:.6px; color:#8a978f; padding:6px 10px 10px;">PASTAS DE CLIENTES</div>
               <div style="display:flex; flex-direction:column; gap:2px;">
@@ -692,7 +716,7 @@
             <div style="display:flex; flex-direction:column; gap:18px;">
               <div>
                 <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">DADOS DA EMPRESA</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div class="gp-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                   <div style="grid-column:span 2;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Razão social / Nome da empresa *</label><input value="{{ cad.empresa }}" sc-camel-on-input="{{ setCadEmpresa }}" placeholder="GymPlus Serviços Ltda." style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
                   <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CNPJ *</label><input value="{{ cad.cnpj }}" sc-camel-on-input="{{ setCadCnpj }}" placeholder="00.000.000/0001-00" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
                   <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nome do representante *</label><input value="{{ cad.representante }}" sc-camel-on-input="{{ setCadRepresentante }}" placeholder="Nome de quem assina" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
@@ -701,7 +725,7 @@
 
               <div>
                 <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">CONTATO E ENDEREÇO</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
+                <div class="gp-grid-3col" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
                   <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Telefone *</label><input value="{{ cad.telefone }}" sc-camel-on-input="{{ setCadTelefone }}" placeholder="(11) 90000-0000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
                   <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CEP *</label><input value="{{ cad.cep }}" sc-camel-on-input="{{ setCadCep }}" placeholder="00000-000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
                   <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Número *</label><input value="{{ cad.numero }}" sc-camel-on-input="{{ setCadNumero }}" placeholder="123" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
@@ -711,7 +735,7 @@
 
               <div>
                 <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">FORMA DE PAGAMENTO</div>
-                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+                <div class="gp-grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
                   <sc-for list="{{ payMethods }}" as="p" hint-placeholder-count="4">
                     <label sc-camel-on-click="{{ p.pick }}" style="{{ p.cardStyle }}" style-hover="border-color:#22c55e; background:#f0fdf4;"><span class="msym" style="font-size:24px; color:{{ p.iconColor }};">{{ p.icon }}</span><span style="font-size:12px; font-weight:700; color:#16211c;">{{ p.label }}</span></label>
                   </sc-for>
@@ -846,7 +870,7 @@
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:{{ autoGrid }}; gap:20px; align-items:start;">
+          <div class="gp-grid-auto" style="display:grid; grid-template-columns:{{ autoGrid }}; gap:20px; align-items:start;">
             <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; overflow:hidden;">
               <div style="padding:18px 22px 14px; display:flex; align-items:center; gap:10px;"><span class="msym" style="font-size:22px; color:#16a34a;">bolt</span><h3 style="font-size:16px; font-weight:800; color:#16211c;">Automações ativas</h3></div>
               <sc-for list="{{ autoRules }}" as="r" hint-placeholder-count="4">
@@ -990,6 +1014,7 @@ class Component extends DCLogic {
     newAuto: { email: true, whats: true }, newAutoError: '', showNewAuto: false,
     noteDraft: '', meetLink: '', meetImporting: false, meetDone: false,
     planEditIdx: null, showAddClient: false, linkCopied: false,
+    mobileNavOpen: false,
   };
 
   componentDidMount() {
@@ -1093,12 +1118,14 @@ class Component extends DCLogic {
   defaultForm() { return [{ label: 'Como você realizou a atividade?', type: 'long' }, { label: 'Anexe as evidências (prints, planilha, links)', type: 'file' }]; }
 
   go(v) {
-    this.setState({ view: v, formSent: false, planSaved: false });
+    this.setState({ view: v, formSent: false, planSaved: false, mobileNavOpen: false });
     if (v === 'projeto' || v === 'auditoria') {
       const c = this.getClients()[this.state.selected];
       if (c) this.loadClientDetail(c.id);
     }
   }
+  toggleMobileNav() { this.setState({ mobileNavOpen: !this.state.mobileNavOpen }); }
+  closeMobileNav() { this.setState({ mobileNavOpen: false }); }
   open(i) {
     this.setState({ view: 'projeto', selected: i, formSent: false, cad: {}, cadastroError: '' });
     const c = this.getClients()[i];
@@ -1612,6 +1639,8 @@ class Component extends DCLogic {
 
     return {
       isLoggedIn: true, notLoggedIn: false,
+      mobileNavOpenClass: this.state.mobileNavOpen ? ' gp-open' : '',
+      toggleMobileNav: () => this.toggleMobileNav(), closeMobileNav: () => this.closeMobileNav(),
       navGroupLabel: isCliente ? 'MINHA MENTORIA' : 'GESTÃO',
       nav,
       userName: this.state.profile.full_name || (isCliente ? client.name : 'Usuário'),
