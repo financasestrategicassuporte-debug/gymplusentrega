@@ -1133,7 +1133,6 @@ class Component extends DCLogic {
       body: {
         name: d.name.trim(), email: d.email.trim(), plan: d.plan || 'SOS Academias',
         consultant: d.consultant || (this.state.consultants || [])[0] || '', whatsapp: d.whatsapp || '',
-        siteUrl: window.location.origin,
       },
     });
     if (error || (data && data.error)) {
