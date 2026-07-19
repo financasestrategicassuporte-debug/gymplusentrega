@@ -899,11 +899,8 @@
           <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nome do cliente *</label><input value="{{ nc.name }}" sc-camel-on-input="{{ setNcName }}" placeholder="Ex.: João da Silva" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
           <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">E-mail do cliente * (usado para o login dele)</label><input type="email" value="{{ nc.email }}" sc-camel-on-input="{{ setNcEmail }}" placeholder="cliente@email.com" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
           <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Plano</label><sc-raw-select sc-camel-on-change="{{ setNcPlan }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"><option>SOS Academias</option><option>PAV 12K</option><option>PAV 24K</option><option>BLACK BELT</option></sc-raw-select></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Mensalidade</label><input value="{{ nc.valor }}" sc-camel-on-input="{{ setNcValor }}" placeholder="R$ 2.400" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Vencimento</label><input value="{{ nc.vencimento }}" sc-camel-on-input="{{ setNcVenc }}" placeholder="10/07" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-          </div>
-          <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Consultor responsável</label><sc-raw-select sc-camel-on-change="{{ setNcConsultant }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"><option>Sandro Marcelino</option><option>Renata Pontes</option></sc-raw-select></div>
+          <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">WhatsApp do cliente</label><input value="{{ nc.whatsapp }}" sc-camel-on-input="{{ setNcWhatsapp }}" placeholder="(11) 90000-0000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Consultor responsável</label><sc-raw-select sc-camel-on-change="{{ setNcConsultant }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"><sc-for list="{{ consultantOptions }}" as="cn" hint-placeholder-count="2"><option>{{ cn }}</option></sc-for></sc-raw-select></div>
           <sc-if value="{{ addClientError }}" hint-placeholder-val="">
             <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ addClientError }}</div>
           </sc-if>
@@ -965,7 +962,7 @@ function fmtDate(iso) {
 }
 function normalizeClient(r) {
   return {
-    id: r.id, userId: r.user_id, name: r.name, email: r.email, plan: r.plan,
+    id: r.id, userId: r.user_id, name: r.name, email: r.email, whatsapp: r.whatsapp, plan: r.plan,
     week: r.week, totalWeeks: r.total_weeks, atividade: r.atividade, financeiro: r.financeiro,
     progress: r.progress, avatarBg: r.avatar_bg, startDate: fmtDate(r.start_date), consultant: r.consultant,
     valor: r.valor, vencimento: r.vencimento, contractLinkSent: r.contract_link_sent,
@@ -1060,12 +1057,14 @@ class Component extends DCLogic {
       clients: (clientsR.data || []).map(normalizeClient),
     };
     if (!isCliente) {
-      const [autoR, cobR] = await Promise.all([
+      const [autoR, cobR, consR] = await Promise.all([
         sb.from('automations').select('*').order('created_at'),
         sb.from('cobranca_steps').select('*').order('sort_order'),
+        sb.from('profiles').select('full_name').eq('role', 'consultor').order('full_name'),
       ]);
       next.automations = autoR.data || [];
       next.cobranca = cobR.data || [];
+      next.consultants = (consR.data || []).map((r) => r.full_name).filter(Boolean);
     }
     this.setState(next);
     const cid = (next.clients[this.state.selected] || next.clients[0] || {}).id;
@@ -1110,8 +1109,7 @@ class Component extends DCLogic {
   setNcEmail(e) { this.setNewClient('email', e.target.value); }
   setNcPlan(e) { this.setNewClient('plan', e.target.value); }
   setNcConsultant(e) { this.setNewClient('consultant', e.target.value); }
-  setNcValor(e) { this.setNewClient('valor', e.target.value); }
-  setNcVenc(e) { this.setNewClient('vencimento', e.target.value); }
+  setNcWhatsapp(e) { this.setNewClient('whatsapp', e.target.value); }
   openAddClient() { this.setState({ showAddClient: true, newClient: {}, addClientError: '' }); }
   closeAddClient() { this.setState({ showAddClient: false }); }
   stop(e) { e.stopPropagation(); }
@@ -1127,7 +1125,7 @@ class Component extends DCLogic {
     const { data, error } = await sb.functions.invoke('create-client', {
       body: {
         name: d.name.trim(), email: d.email.trim(), plan: d.plan || 'SOS Academias',
-        consultant: d.consultant || 'Sandro Marcelino', valor: d.valor || 'R$ 2.400', vencimento: d.vencimento || '10/07',
+        consultant: d.consultant || (this.state.consultants || [])[0] || '', whatsapp: d.whatsapp || '',
       },
     });
     if (error || (data && data.error)) {
@@ -1694,8 +1692,9 @@ class Component extends DCLogic {
       addClientBtnLabel: this.state.addClientLoading ? 'Criando…' : 'Criar projeto e gerar link do contrato',
       stop: (e) => this.stop(e),
       nc: this.state.newClient || {},
+      consultantOptions: this.state.consultants || [],
       setNcName: (e) => this.setNcName(e), setNcEmail: (e) => this.setNcEmail(e), setNcPlan: (e) => this.setNcPlan(e),
-      setNcConsultant: (e) => this.setNcConsultant(e), setNcValor: (e) => this.setNcValor(e), setNcVenc: (e) => this.setNcVenc(e),
+      setNcConsultant: (e) => this.setNcConsultant(e), setNcWhatsapp: (e) => this.setNcWhatsapp(e),
 
       meetLink: this.state.meetLink || '', setMeetLink: (e) => this.setMeetLink(e), importMeet: () => this.importMeet(),
       meetImporting: !!this.state.meetImporting, meetDone: !!this.state.meetDone,
