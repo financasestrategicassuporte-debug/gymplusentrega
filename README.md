@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/30167842/README.md)
 # GYMPLUS · Plataforma
 
 Plataforma de acompanhamento de clientes (jornada semanal, financeiro,
@@ -26,9 +27,8 @@ dados são gravados no banco e o login é de verdade.
 
 ## O que **não** é real (fica para uma próxima etapa, se quiser)
 
-- **Envio de e-mail/WhatsApp**: os botões existem na tela, mas nenhum
-  provedor de envio (ex.: um serviço de e-mail, ou a API do WhatsApp) está
-  conectado ainda. Hoje nada é disparado de verdade.
+- **Envio de WhatsApp**: os botões existem na tela, mas nenhum provedor
+  (ex.: API do WhatsApp Business) está conectado ainda.
 - **Importar reunião do Google Meet**: é só uma simulação visual (não puxa
   transcrição real).
 - Ícone "Pix" na ficha de contrato usa um nome de ícone que a fonte de
@@ -82,6 +82,34 @@ Forma mais simples (sem instalar nada):
 A função já usa `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`, que o
 Supabase disponibiliza automaticamente para toda Edge Function — não
 precisa configurar nada extra.
+
+**Importante:** o nome que aparece na tela do Supabase é só um rótulo —
+o endereço de verdade da função é o que aparece na **URL** dela (ex.:
+`.../functions/v1/smart-api`). O front-end (`index.html`) chama a função
+pelo nome que estiver depois de `/v1/` na URL — confira se bate com o
+que está em `sb.functions.invoke('...')` no arquivo.
+
+#### E-mail de boas-vindas automático (login + senha do cliente)
+
+Quando o admin cadastra um cliente novo, a plataforma manda um e-mail
+com o login e a senha, enviado pelo Gmail. Para ativar:
+
+1. Na conta do Gmail que vai enviar os e-mails, ative a **verificação em
+   duas etapas** (Conta Google → Segurança).
+2. Ainda em Segurança, procure **Senhas de app** (App passwords) e crie
+   uma nova senha de app (escolha qualquer nome, ex.: "GYMPLUS").
+   Copie o código de 16 letras gerado.
+3. No Supabase, vá em **Edge Functions** → abra a função → aba
+   **Settings** (ou **Secrets** / "Manage secrets", dependendo da versão
+   do painel) e adicione duas variáveis:
+   - `GMAIL_USER` = o e-mail que envia (ex.: `ssolucoesempresariais4@gmail.com`)
+   - `GMAIL_APP_PASSWORD` = a senha de app de 16 letras do passo 2 (sem espaços)
+4. Sem precisar reimplantar nada — na próxima vez que um cliente for
+   cadastrado, o e-mail já sai automaticamente.
+
+Se essas variáveis não estiverem configuradas, o cliente ainda é criado
+normalmente; só o e-mail não é enviado (a plataforma avisa isso na tela
+e mostra a senha temporária para você repassar manualmente).
 
 ### 4. Conectar o site ao seu projeto Supabase
 
