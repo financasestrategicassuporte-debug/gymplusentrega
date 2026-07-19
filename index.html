@@ -1122,7 +1122,7 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ addClientLoading: true, addClientError: '' });
-    const { data, error } = await sb.functions.invoke('create-client', {
+    const { data, error } = await sb.functions.invoke('smart-api', {
       body: {
         name: d.name.trim(), email: d.email.trim(), plan: d.plan || 'SOS Academias',
         consultant: d.consultant || (this.state.consultants || [])[0] || '', whatsapp: d.whatsapp || '',
