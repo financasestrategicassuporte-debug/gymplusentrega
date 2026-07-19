@@ -1137,7 +1137,14 @@ class Component extends DCLogic {
       },
     });
     if (error || (data && data.error)) {
-      this.setState({ addClientLoading: false, addClientError: (data && data.error) || error.message || 'Erro ao criar cliente.' });
+      let msg = (data && data.error) || (error && error.message) || 'Erro ao criar cliente.';
+      if (error && error.context && typeof error.context.json === 'function') {
+        try {
+          const body = await error.context.json();
+          if (body && body.error) msg = body.error;
+        } catch (_e) { /* resposta não era JSON, mantém a mensagem genérica */ }
+      }
+      this.setState({ addClientLoading: false, addClientError: msg });
       return;
     }
     await this.loadAll();
