@@ -17,18 +17,9 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
-create policy "profiles_select_self_or_staff"
-  on public.profiles for select
-  using (
-    id = auth.uid()
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin','consultor'))
-  );
-
-create policy "profiles_update_self"
-  on public.profiles for update
-  using (id = auth.uid());
-
 -- helper: verdadeiro se o usuário logado é admin ou consultor (equipe)
+-- (security definer: roda sem RLS, evitando recursão da política de profiles
+-- consultando a própria tabela profiles)
 create or replace function public.is_staff()
 returns boolean
 language sql
@@ -55,6 +46,14 @@ as $$
   );
 $$;
 
+create policy "profiles_select_self_or_staff"
+  on public.profiles for select
+  using (id = auth.uid() or public.is_staff());
+
+create policy "profiles_update_self"
+  on public.profiles for update
+  using (id = auth.uid());
+
 -- ---------------------------------------------------------------------------
 -- CLIENTS (cada cliente = um projeto/jornada)
 -- ---------------------------------------------------------------------------
@@ -63,6 +62,7 @@ create table if not exists public.clients (
   user_id uuid references auth.users(id) on delete set null,
   name text not null,
   email text,
+  whatsapp text,
   plan text not null default 'SOS Academias',
   week int not null default 1,
   total_weeks int not null default 12,
@@ -78,6 +78,9 @@ create table if not exists public.clients (
   cadastro_sent boolean not null default false,
   contract_approved boolean not null default false,
   cadastro jsonb not null default '{}'::jsonb,
+  cadastro_token uuid not null default gen_random_uuid(),
+  raiox jsonb not null default '{}'::jsonb,
+  raiox_submitted_at timestamptz,
   created_at timestamptz not null default now()
 );
 
@@ -231,7 +234,28 @@ create policy "cobranca_write_staff"
   with check (public.is_staff());
 
 -- ---------------------------------------------------------------------------
--- STORAGE (anexos enviados no formulário semanal)
+-- SCHEDULED_EMAILS (fila de e-mails com atraso — ex.: Raio-X 3 min após o login)
+-- Só é lido/gravado pelas Edge Functions (via service role), por isso a
+-- política abaixo só libera leitura para a equipe (não é usada pelo site).
+-- ---------------------------------------------------------------------------
+create table if not exists public.scheduled_emails (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references public.clients(id) on delete cascade,
+  kind text not null,
+  send_at timestamptz not null,
+  sent boolean not null default false,
+  sent_error text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.scheduled_emails enable row level security;
+
+create policy "scheduled_emails_staff"
+  on public.scheduled_emails for select
+  using (public.is_staff());
+
+-- ---------------------------------------------------------------------------
+-- STORAGE (anexos enviados no formulário semanal e no Raio-X)
 -- ---------------------------------------------------------------------------
 insert into storage.buckets (id, name, public)
 values ('evidencias', 'evidencias', false)
@@ -305,3 +329,27 @@ where not exists (select 1 from public.automations);
 -- Clientes recebem login automaticamente quando o admin usa "Adicionar cliente"
 -- na plataforma (isso cria o usuário e o profile role='cliente' via Edge Function).
 -- ---------------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------------
+-- AGENDAMENTO DO E-MAIL DO RAIO-X (roda a cada minuto, dispara os e-mails
+-- cujo horário já chegou). Rode isto DEPOIS de publicar a Edge Function
+-- "dispatch-scheduled-emails" — troque SEU-PROJETO e SUA_ANON_KEY pelos
+-- valores do seu projeto (Project Settings > API).
+-- ---------------------------------------------------------------------------
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+select cron.schedule(
+  'dispatch-scheduled-emails',
+  '* * * * *',
+  $$
+  select net.http_post(
+    url := 'https://SEU-PROJETO.supabase.co/functions/v1/smart-api',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer SUA_ANON_KEY", "x-cron-secret": "SUA_CRON_SECRET"}'::jsonb,
+    body := '{"action": "dispatch-scheduled-emails"}'::jsonb
+  );
+  $$
+);
+
+-- Para conferir se está rodando: select * from cron.job;
+-- Para cancelar, se precisar: select cron.unschedule('dispatch-scheduled-emails');
