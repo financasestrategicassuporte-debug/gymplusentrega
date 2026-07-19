@@ -55,6 +55,73 @@
 </style>
 </helmet>
 
+<sc-if value="{{ isPublicCadastro }}" hint-placeholder-val="">
+  <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(140deg,#0d2a20 0%,#123328 55%,#0a2019 100%);" class="gp-login-outer">
+    <div style="width:100%; max-width:620px; animation:gpFade .4s ease;">
+      <div style="display:flex; align-items:center; gap:13px; margin-bottom:24px;">
+        <div style="width:44px; height:44px; border-radius:13px; background:linear-gradient(135deg,#22c55e,#15803d); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(34,197,94,.4); flex-shrink:0;"><span class="msym" style="font-size:26px; color:#06140d;">fitness_center</span></div>
+        <div><div style="font-size:22px; font-weight:800; color:#fff; letter-spacing:-.5px;">GYM<span style="color:#4ade80;">PLUS</span></div><div style="font-size:11px; font-weight:600; color:#6f9585; letter-spacing:1.5px;">FICHA PARA GERAÇÃO DO CONTRATO</div></div>
+      </div>
+
+      <sc-if value="{{ pubCadDone }}" hint-placeholder-val="">
+        <div style="background:#fbfcfb; border-radius:20px; padding:40px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35);">
+          <span class="msym" style="font-size:48px; color:#16a34a;">task_alt</span>
+          <h2 style="font-size:20px; font-weight:800; color:#16211c; margin-top:12px;">Dados recebidos!</h2>
+          <p style="font-size:14px; color:#6b7c73; margin-top:8px;">Nosso time vai gerar o contrato e entrar em contato para a assinatura. Obrigado!</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ pubCadNotFound }}" hint-placeholder-val="">
+        <div style="background:#fbfcfb; border-radius:20px; padding:40px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35);">
+          <span class="msym" style="font-size:48px; color:#b91c1c;">error</span>
+          <h2 style="font-size:20px; font-weight:800; color:#16211c; margin-top:12px;">Link inválido</h2>
+          <p style="font-size:14px; color:#6b7c73; margin-top:8px;">Esse link não é válido. Peça ao seu consultor para reenviar o e-mail.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ pubCadForm }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fbfcfb; border-radius:20px; padding:30px 30px 28px; box-shadow:0 24px 60px rgba(0,0,0,.35);">
+        <h2 style="font-size:19px; font-weight:800; color:#16211c;">Dados para o contrato</h2>
+        <p style="font-size:13px; color:#6b7c73; margin-top:3px; margin-bottom:20px;">Preencha para gerarmos o contrato de prestação de serviço. Todos os campos são obrigatórios.</p>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nome completo do responsável legal *</label><input value="{{ pubCad.responsavel }}" sc-camel-on-input="{{ setPubCadResponsavel }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="gp-grid-2">
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">E-mail *</label><input type="email" value="{{ pubCad.email }}" sc-camel-on-input="{{ setPubCadEmail }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CPF *</label><input value="{{ pubCad.cpf }}" sc-camel-on-input="{{ setPubCadCpf }}" placeholder="000.000.000-00" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="gp-grid-2">
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nome registrado da academia *</label><input value="{{ pubCad.nomeAcademia }}" sc-camel-on-input="{{ setPubCadNomeAcademia }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CNPJ *</label><input value="{{ pubCad.cnpj }}" sc-camel-on-input="{{ setPubCadCnpj }}" placeholder="00.000.000/0001-00" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          </div>
+          <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Telefone *</label><input value="{{ pubCad.telefone }}" sc-camel-on-input="{{ setPubCadTelefone }}" placeholder="(11) 90000-0000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px;" class="gp-grid-2">
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Endereço completo *</label><input value="{{ pubCad.endereco }}" sc-camel-on-input="{{ setPubCadEndereco }}" placeholder="Rua, bairro, cidade / UF" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+            <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CEP *</label><input value="{{ pubCad.cep }}" sc-camel-on-input="{{ setPubCadCep }}" placeholder="00000-000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">O responsável legal é sócio único? Possui algum cargo formal? Se sim, qual (ex.: sócio administrador)?</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="gp-grid-2">
+              <sc-raw-select value="{{ pubCad.socioUnico }}" sc-camel-on-change="{{ setPubCadSocioUnico }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
+                <option value="">Sócio único?</option>
+                <option value="Sim, sócio único">Sim, sócio único</option>
+                <option value="Não, tem outros sócios">Não, tem outros sócios</option>
+              </sc-raw-select>
+              <input value="{{ pubCad.cargo }}" sc-camel-on-input="{{ setPubCadCargo }}" placeholder="Cargo formal (ex.: sócio administrador)" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
+            </div>
+          </div>
+
+          <sc-if value="{{ pubCadError }}" hint-placeholder-val="">
+            <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ pubCadError }}</div>
+          </sc-if>
+          <button sc-camel-on-click="{{ submitPubCad }}" style="width:100%; background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:800; padding:14px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 18px rgba(34,197,94,.35);" style-hover="filter:brightness(1.05);">{{ pubCadBtnLabel }} <span class="msym" style="font-size:20px;">send</span></button>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ notLoggedIn }}" hint-placeholder-val="{{ true }}">
   <div style="height:100vh; display:flex; overflow:hidden; overflow-y:auto; background:linear-gradient(140deg,#0d2a20 0%,#123328 55%,#0a2019 100%);">
     <div class="gp-login-outer" style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px;">
@@ -317,19 +384,33 @@
           </div>
 
           <sc-if value="{{ canManage }}" hint-placeholder-val="{{ true }}">
-          <div style="background:{{ contract.cardBg }}; border:1px solid {{ contract.cardBorder }}; border-radius:16px; padding:18px 22px; margin-bottom:20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-            <div style="width:44px; height:44px; border-radius:12px; background:{{ contract.iconBg }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span class="msym" style="font-size:24px; color:{{ contract.iconColor }};">{{ contract.icon }}</span></div>
-            <div style="flex:1; min-width:180px;">
-              <div style="font-size:14px; font-weight:800; color:#16211c;">Dados para o contrato</div>
-              <div style="font-size:12.5px; color:#6b7c73; margin-top:1px;">{{ contract.statusText }}</div>
+          <div style="background:{{ contract.cardBg }}; border:1px solid {{ contract.cardBorder }}; border-radius:16px; padding:18px 22px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+              <div style="width:44px; height:44px; border-radius:12px; background:{{ contract.iconBg }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span class="msym" style="font-size:24px; color:{{ contract.iconColor }};">{{ contract.icon }}</span></div>
+              <div style="flex:1; min-width:180px;">
+                <div style="font-size:14px; font-weight:800; color:#16211c;">Dados para o contrato</div>
+                <div style="font-size:12.5px; color:#6b7c73; margin-top:1px;">{{ contract.statusText }}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #d5ddd8; border-radius:10px; padding:6px 6px 6px 12px; min-width:260px;">
+                <span class="msym" style="font-size:17px; color:#16a34a;">link</span>
+                <span style="flex:1; font-size:12.5px; color:#4a574f; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ contract.link }}</span>
+                <button sc-camel-on-click="{{ copyContractLink }}" style="background:#123328; color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; padding:8px 13px; border-radius:8px; display:flex; align-items:center; gap:6px; flex-shrink:0;" style-hover="background:#1c4a3a;"><span class="msym" style="font-size:15px;">{{ contract.copyIcon }}</span>{{ contract.copyLabel }}</button>
+              </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #d5ddd8; border-radius:10px; padding:6px 6px 6px 12px; min-width:260px;">
-              <span class="msym" style="font-size:17px; color:#16a34a;">link</span>
-              <span style="flex:1; font-size:12.5px; color:#4a574f; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ contract.link }}</span>
-              <button sc-camel-on-click="{{ copyContractLink }}" style="background:#123328; color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; padding:8px 13px; border-radius:8px; display:flex; align-items:center; gap:6px; flex-shrink:0;" style-hover="background:#1c4a3a;"><span class="msym" style="font-size:15px;">{{ contract.copyIcon }}</span>{{ contract.copyLabel }}</button>
-            </div>
-            <button sc-camel-on-click="{{ openCadastro }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:800; padding:10px 15px; border-radius:10px; display:flex; align-items:center; gap:7px; flex-shrink:0;" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:17px;">open_in_new</span> Abrir formulário</button>
+            <sc-if value="{{ contract.showData }}" hint-placeholder-val="">
+              <div style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(0,0,0,.1); display:grid; grid-template-columns:repeat(2,1fr); gap:8px 20px;" class="gp-grid-2">
+                <sc-for list="{{ contract.fields }}" as="f" hint-placeholder-count="6">
+                  <div><span style="font-size:11px; font-weight:700; color:#8a978f;">{{ f.label }}</span><div style="font-size:13px; font-weight:600; color:#16211c;">{{ f.value }}</div></div>
+                </sc-for>
+              </div>
+            </sc-if>
           </div>
+          </sc-if>
+
+          <sc-if value="{{ raioxDone }}" hint-placeholder-val="">
+          <sc-if value="{{ canManage }}" hint-placeholder-val="{{ true }}">
+            <button sc-camel-on-click="{{ goDiagnostico }}" style="margin-bottom:20px; background:linear-gradient(135deg,#123328,#0d2a20); color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:800; padding:11px 18px; border-radius:11px; display:inline-flex; align-items:center; gap:8px;" style-hover="filter:brightness(1.15);"><span class="msym" style="font-size:18px; color:#4ade80;">query_stats</span> Ver Diagnóstico (Raio-X)</button>
+          </sc-if>
           </sc-if>
 
           <div class="gp-grid-main-side" style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; align-items:start;">
@@ -703,62 +784,128 @@
       </sc-if>
 
       <!-- ===================== CADASTRO / CONTRATO ===================== -->
-      <sc-if value="{{ isCadastro }}" hint-placeholder-val="">
-        <div style="animation:gpFade .3s ease; max-width:760px; margin:0 auto;">
+      <!-- ===================== RAIO-X (CLIENTE) ===================== -->
+      <sc-if value="{{ isRaiox }}" hint-placeholder-val="">
+        <div style="animation:gpFade .3s ease; max-width:820px; margin:0 auto;">
           <div style="background:linear-gradient(135deg,#123328,#0d2a20); border-radius:16px; padding:20px 24px; margin-bottom:20px; display:flex; align-items:center; gap:14px;">
-            <div style="width:46px; height:46px; border-radius:12px; background:#22c55e; display:flex; align-items:center; justify-content:center;"><span class="msym" style="font-size:26px; color:#06140d;">contract_edit</span></div>
-            <div style="flex:1;"><div style="font-size:12px; font-weight:800; letter-spacing:.5px; color:#4ade80;">FICHA PARA ASSINATURA DO CONTRATO</div><div style="font-size:18px; font-weight:800; color:#fff;">{{ client.name }}</div></div>
-            <span style="font-size:11px; font-weight:700; color:#9fbdaf; background:rgba(255,255,255,.08); padding:6px 11px; border-radius:20px; display:inline-flex; align-items:center; gap:5px;"><span class="msym" style="font-size:15px;">lock</span>Link seguro</span>
+            <div style="width:46px; height:46px; border-radius:12px; background:#22c55e; display:flex; align-items:center; justify-content:center;"><span class="msym" style="font-size:26px; color:#06140d;">query_stats</span></div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:800; letter-spacing:.5px; color:#4ade80;">DIAGNÓSTICO DO NEGÓCIO</div><div style="font-size:18px; font-weight:800; color:#fff;">Formulário de Raio-X</div></div>
           </div>
 
           <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:26px;">
-            <p style="font-size:14px; color:#6b7c73; margin-bottom:22px; line-height:1.5;">Preencha os dados abaixo para gerarmos o contrato de prestação de serviço. Todos os campos são obrigatórios.</p>
-            <div style="display:flex; flex-direction:column; gap:18px;">
+            <p style="font-size:14px; color:#6b7c73; margin-bottom:22px; line-height:1.5;">Preencha com o máximo de detalhes possível — esses dados são usados para montar seu diagnóstico e plano de ação.</p>
+            <div style="display:flex; flex-direction:column; gap:22px;">
               <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">DADOS DA EMPRESA</div>
-                <div class="gp-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-                  <div style="grid-column:span 2;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Razão social / Nome da empresa *</label><input value="{{ cad.empresa }}" sc-camel-on-input="{{ setCadEmpresa }}" placeholder="GymPlus Serviços Ltda." style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CNPJ *</label><input value="{{ cad.cnpj }}" sc-camel-on-input="{{ setCadCnpj }}" placeholder="00.000.000/0001-00" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nome do representante *</label><input value="{{ cad.representante }}" sc-camel-on-input="{{ setCadRepresentante }}" placeholder="Nome de quem assina" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                </div>
+                <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Período de análise</label>
+                <sc-raw-select value="{{ rx.periodo }}" sc-camel-on-change="{{ setRxPeriodo }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
+                  <option value="">Selecione</option>
+                  <option value="6 meses">6 meses</option>
+                  <option value="12 meses">12 meses</option>
+                </sc-raw-select>
               </div>
 
               <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">CONTATO E ENDEREÇO</div>
+                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE MARKETING · TRÁFEGO PAGO</div>
                 <div class="gp-grid-3col" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Telefone *</label><input value="{{ cad.telefone }}" sc-camel-on-input="{{ setCadTelefone }}" placeholder="(11) 90000-0000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CEP *</label><input value="{{ cad.cep }}" sc-camel-on-input="{{ setCadCep }}" placeholder="00000-000" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Número *</label><input value="{{ cad.numero }}" sc-camel-on-input="{{ setCadNumero }}" placeholder="123" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div style="grid-column:span 3;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Endereço completo *</label><input value="{{ cad.endereco }}" sc-camel-on-input="{{ setCadEndereco }}" placeholder="Rua, bairro, cidade / UF" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CPL (custo por lead)</label><input value="{{ rx.cpl }}" sc-camel-on-input="{{ setRxCpl }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nº de leads desejados</label><input value="{{ rx.leadsDesejados }}" sc-camel-on-input="{{ setRxLeadsDesejados }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Valor investido</label><input value="{{ rx.valorInvestido }}" sc-camel-on-input="{{ setRxValorInvestido }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Taxa de conversão (%)</label><input value="{{ rx.txConversao }}" sc-camel-on-input="{{ setRxTxConversao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Vendas geradas</label><input value="{{ rx.vendasMkt }}" sc-camel-on-input="{{ setRxVendasMkt }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CAC</label><input value="{{ rx.cac }}" sc-camel-on-input="{{ setRxCac }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+                </div>
+                <div style="margin-top:14px;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Visitação</label><input value="{{ rx.visitacao }}" sc-camel-on-input="{{ setRxVisitacao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              </div>
+
+              <div>
+                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE VENDAS</div>
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada colaborador gera na recepção?</label><textarea value="{{ rx.resultadosRecepcao }}" sc-camel-on-input="{{ setRxResultadosRecepcao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Perfil ideal do colaborador</label><textarea value="{{ rx.perfilColaborador }}" sc-camel-on-input="{{ setRxPerfilColaborador }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Rotinas diárias do time comercial</label><textarea value="{{ rx.rotinasComercial }}" sc-camel-on-input="{{ setRxRotinasComercial }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Tipos de bonificação e comissionamento</label><textarea value="{{ rx.bonificacao }}" sc-camel-on-input="{{ setRxBonificacao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
                 </div>
               </div>
 
               <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">FORMA DE PAGAMENTO</div>
-                <div class="gp-grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
-                  <sc-for list="{{ payMethods }}" as="p" hint-placeholder-count="4">
-                    <label sc-camel-on-click="{{ p.pick }}" style="{{ p.cardStyle }}" style-hover="border-color:#22c55e; background:#f0fdf4;"><span class="msym" style="font-size:24px; color:{{ p.iconColor }};">{{ p.icon }}</span><span style="font-size:12px; font-weight:700; color:#16211c;">{{ p.label }}</span></label>
-                  </sc-for>
+                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE EVASÃO</div>
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada professor gera?</label><textarea value="{{ rx.resultadosProfessor }}" sc-camel-on-input="{{ setRxResultadosProfessor }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Frequência de acesso de segunda e de sexta</label><textarea value="{{ rx.frequenciaAcesso }}" sc-camel-on-input="{{ setRxFrequenciaAcesso }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de alunos faltosos</label><textarea value="{{ rx.controleFaltosos }}" sc-camel-on-input="{{ setRxControleFaltosos }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de frequência de alunos matriculados nos últimos 90 dias</label><textarea value="{{ rx.controleFrequencia90 }}" sc-camel-on-input="{{ setRxControleFrequencia90 }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Churn (% saída total de alunos ÷ base de alunos do início do mês)</label><input value="{{ rx.churn }}" sc-camel-on-input="{{ setRxChurn }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
                 </div>
               </div>
 
               <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">OBSERVAÇÕES</div>
-                <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Negociação diferenciada (opcional)</label>
-                <textarea value="{{ cad.obs }}" sc-camel-on-input="{{ setCadObs }}" placeholder="Caso o pagamento tenha sido combinado de outra forma — entrada + parcelas, desconto, permuta, condição especial — descreva aqui." style="width:100%; min-height:80px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea>
-              </div>
-
-              <sc-if value="{{ cadastroError }}" hint-placeholder-val="">
-                <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ cadastroError }}</div>
-              </sc-if>
-              <div style="border-top:1px solid #edf0ee; padding-top:20px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-                <button sc-camel-on-click="{{ submitCadastro }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:14px; font-weight:800; padding:13px 24px; border-radius:12px; display:flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(34,197,94,.3);" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:20px;">send</span> Enviar dados do contrato</button>
-                <sc-if value="{{ cadastroSent }}" hint-placeholder-val="">
-                  <span style="font-size:13px; font-weight:700; color:#15803d; display:inline-flex; align-items:center; gap:6px;"><span class="msym" style="font-size:18px;">task_alt</span> Dados recebidos! Contrato em geração.</span>
+                <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Arquivos de apoio (planilhas, prints, relatórios)</label>
+                <div sc-camel-on-click="{{ clickRxFileInput }}" style="border:2px dashed #cdd6d1; border-radius:12px; padding:24px; text-align:center; background:#f6f9f7; cursor:pointer;" style-hover="border-color:#22c55e; background:#f0fdf4;">
+                  <span class="msym" style="font-size:30px; color:#a3b0a8;">cloud_upload</span>
+                  <div style="font-size:13px; font-weight:700; color:#4a574f; margin-top:4px;">Clique para enviar arquivos</div>
+                </div>
+                <input id="rxFileInput" type="file" multiple style="display:none;" sc-camel-on-change="{{ onRxFilesPicked }}">
+                <sc-if value="{{ raioxFileNames }}" hint-placeholder-val="">
+                  <div style="font-size:12px; color:#4a574f; margin-top:8px; font-weight:600;">Selecionado(s): {{ raioxFileNames }}</div>
                 </sc-if>
               </div>
+
+              <sc-if value="{{ raioxError }}" hint-placeholder-val="">
+                <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ raioxError }}</div>
+              </sc-if>
+              <button sc-camel-on-click="{{ submitRaiox }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:14px; font-weight:800; padding:13px 24px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(34,197,94,.3);" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:20px;">send</span>{{ submitRaioxLabel }}</button>
             </div>
           </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== DIAGNÓSTICO / RAIO-X (ADMIN, INTERNO) ===================== -->
+      <sc-if value="{{ isDiagnostico }}" hint-placeholder-val="">
+        <div style="animation:gpFade .3s ease; max-width:960px; margin:0 auto;">
+          <div style="background:linear-gradient(135deg,#123328,#0d2a20); border-radius:18px; padding:22px 26px; margin-bottom:20px; display:flex; align-items:center; gap:16px;">
+            <span class="msym" style="font-size:28px; color:#4ade80;">query_stats</span>
+            <div style="flex:1;">
+              <div style="font-size:16px; font-weight:800; color:#fff;">Diagnóstico · {{ client.name }}</div>
+              <div style="font-size:13px; color:#9fbdaf; margin-top:2px;">Uso interno — apresentar na reunião de onboarding. Não é enviado ao cliente.</div>
+            </div>
+            <span style="font-size:11px; font-weight:700; color:#9fbdaf; background:rgba(255,255,255,.08); padding:6px 11px; border-radius:20px;">Período: {{ diagnostico.periodo }}</span>
+          </div>
+
+          <sc-if value="{{ diagnostico.submitted }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:20px 24px;">
+              <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;"><span class="msym" style="font-size:20px; color:#1d4ed8;">campaign</span><h3 style="font-size:15px; font-weight:800; color:#16211c;">Marketing</h3></div>
+              <div class="gp-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px;">
+                <sc-for list="{{ diagnostico.marketing }}" as="d" hint-placeholder-count="6">
+                  <div style="padding:8px 0; border-bottom:1px solid #edf0ee;"><span style="font-size:11px; font-weight:700; color:#8a978f;">{{ d.label }}</span><div style="font-size:14px; font-weight:700; color:#16211c;">{{ d.value }}</div></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:20px 24px;">
+              <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;"><span class="msym" style="font-size:20px; color:#15803d;">payments</span><h3 style="font-size:15px; font-weight:800; color:#16211c;">Vendas</h3></div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ diagnostico.vendas }}" as="d" hint-placeholder-count="4">
+                  <div style="padding:8px 0; border-bottom:1px solid #edf0ee;"><span style="font-size:11px; font-weight:700; color:#8a978f;">{{ d.label }}</span><div style="font-size:13.5px; color:#16211c; line-height:1.5;">{{ d.value }}</div></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:20px 24px;">
+              <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;"><span class="msym" style="font-size:20px; color:#b45309;">person_off</span><h3 style="font-size:15px; font-weight:800; color:#16211c;">Evasão</h3></div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ diagnostico.evasao }}" as="d" hint-placeholder-count="5">
+                  <div style="padding:8px 0; border-bottom:1px solid #edf0ee;"><span style="font-size:11px; font-weight:700; color:#8a978f;">{{ d.label }}</span><div style="font-size:13.5px; color:#16211c; line-height:1.5;">{{ d.value }}</div></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="font-size:12px; color:#8a978f;">{{ diagnostico.attachmentsCount }} arquivo(s) anexado(s) pelo cliente (bucket "evidencias" no Supabase Storage).</div>
+          </div>
+          </sc-if>
+          <sc-if value="{{ diagnostico.notSubmitted }}" hint-placeholder-val="">
+          <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:30px; text-align:center;">
+            <span class="msym" style="font-size:32px; color:#a3b0a8;">hourglass_empty</span>
+            <p style="font-size:14px; color:#6b7c73; margin-top:8px;">O cliente ainda não preencheu o Raio-X.</p>
+          </div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -998,6 +1145,7 @@ function normalizeClient(r) {
     progress: r.progress, avatarBg: r.avatar_bg, startDate: fmtDate(r.start_date), consultant: r.consultant,
     valor: r.valor, vencimento: r.vencimento, contractLinkSent: r.contract_link_sent,
     cadastroSent: r.cadastro_sent, contractApproved: r.contract_approved, cadastro: r.cadastro || {},
+    cadastroToken: r.cadastro_token, raiox: r.raiox || {}, raioxSubmittedAt: r.raiox_submitted_at,
   };
 }
 
@@ -1015,6 +1163,8 @@ class Component extends DCLogic {
     noteDraft: '', meetLink: '', meetImporting: false, meetDone: false,
     planEditIdx: null, showAddClient: false, linkCopied: false,
     mobileNavOpen: false,
+    pubCad: {}, pubCadError: '', pubCadSubmitting: false, pubCadDone: false,
+    raiox: {}, raioxFiles: [], raioxFileNames: '', raioxSubmitting: false, raioxError: '',
   };
 
   componentDidMount() {
@@ -1179,8 +1329,8 @@ class Component extends DCLogic {
       showAddClient: false, newClient: {}, addClientLoading: false, addClientError: '',
       selected: idx >= 0 ? idx : 0, view: 'projeto',
       addClientNotice: data.emailSent
-        ? 'Cliente criado e e-mail de boas-vindas enviado!'
-        : 'Cliente criado, mas o e-mail não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + '). Senha temporária: ' + data.tempPassword,
+        ? 'Cliente criado! E-mail com o link do formulário de contrato foi enviado.'
+        : 'Cliente criado, mas o e-mail com o link do contrato não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + '). Copie o link do quadro "Dados para o contrato" abaixo e envie manualmente.',
     });
   }
 
@@ -1195,17 +1345,28 @@ class Component extends DCLogic {
     }
   }
 
-  async sendContractLink() {
-    const c = this.getClients()[this.state.selected];
-    if (!c || !sb) return;
-    await sb.from('clients').update({ contract_link_sent: true }).eq('id', c.id);
-    await this.loadAll();
-  }
   async approveContract() {
     const c = this.getClients()[this.state.selected];
     if (!c || !sb) return;
-    await sb.from('clients').update({ contract_approved: true }).eq('id', c.id);
+    this.setState({ approveContractLoading: true, addClientNotice: '' });
+    const { data, error } = await sb.functions.invoke('smart-api', {
+      body: { action: 'approve-contract', clientId: c.id },
+    });
+    if (error || (data && data.error)) {
+      let msg = (data && data.error) || (error && error.message) || 'Erro ao aprovar contrato.';
+      if (error && error.context && typeof error.context.json === 'function') {
+        try { const b = await error.context.json(); if (b && b.error) msg = b.error; } catch (_e) {}
+      }
+      this.setState({ approveContractLoading: false, addClientNotice: 'Erro: ' + msg });
+      return;
+    }
     await this.loadAll();
+    this.setState({
+      approveContractLoading: false,
+      addClientNotice: data.emailSent
+        ? 'Contrato aprovado! E-mail de acesso enviado ao cliente.'
+        : 'Contrato aprovado, mas o e-mail de acesso não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + '). Senha temporária: ' + data.tempPassword,
+    });
   }
 
   copyContractLink() {
@@ -1217,32 +1378,39 @@ class Component extends DCLogic {
     setTimeout(() => this.setState({ linkCopied: false }), 1500);
   }
 
-  // ------------------------------------------------------------- cadastro --
-  openCadastro() { this.setState({ view: 'cadastro', cad: {}, cadastroError: '' }); }
-  setCad(field, val) { this.setState({ cad: { ...(this.state.cad || {}), [field]: val } }); }
-  setCadEmpresa(e) { this.setCad('empresa', e.target.value); }
-  setCadCnpj(e) { this.setCad('cnpj', e.target.value); }
-  setCadRepresentante(e) { this.setCad('representante', e.target.value); }
-  setCadTelefone(e) { this.setCad('telefone', e.target.value); }
-  setCadCep(e) { this.setCad('cep', e.target.value); }
-  setCadNumero(e) { this.setCad('numero', e.target.value); }
-  setCadEndereco(e) { this.setCad('endereco', e.target.value); }
-  setCadObs(e) { this.setCad('obs', e.target.value); }
-  pickPayMethod(label) { this.setCad('pagamento', label); }
-
-  async submitCadastro() {
-    const cad = this.state.cad || {};
-    const required = ['empresa', 'cnpj', 'representante', 'telefone', 'cep', 'numero', 'endereco'];
-    if (required.some((k) => !(cad[k] || '').trim())) {
-      this.setState({ cadastroError: 'Preencha todos os campos obrigatórios (*).' });
+  // ------------------------------------------------------------- cadastro público (cliente, sem login) --
+  setPubCad(field, e) { this.setState({ pubCad: { ...(this.state.pubCad || {}), [field]: e.target.value } }); }
+  setPubCadResponsavel(e) { this.setPubCad('responsavel', e); }
+  setPubCadEmail(e) { this.setPubCad('email', e); }
+  setPubCadCpf(e) { this.setPubCad('cpf', e); }
+  setPubCadNomeAcademia(e) { this.setPubCad('nomeAcademia', e); }
+  setPubCadCnpj(e) { this.setPubCad('cnpj', e); }
+  setPubCadTelefone(e) { this.setPubCad('telefone', e); }
+  setPubCadEndereco(e) { this.setPubCad('endereco', e); }
+  setPubCadCep(e) { this.setPubCad('cep', e); }
+  setPubCadSocioUnico(e) { this.setPubCad('socioUnico', e); }
+  setPubCadCargo(e) { this.setPubCad('cargo', e); }
+  async submitPublicCadastro(token) {
+    const d = this.state.pubCad || {};
+    const required = ['responsavel', 'email', 'cpf', 'nomeAcademia', 'cnpj', 'telefone', 'endereco', 'cep'];
+    if (required.some((k) => !(d[k] || '').trim())) {
+      this.setState({ pubCadError: 'Preencha todos os campos obrigatórios (*).' });
       return;
     }
-    const c = this.getClients()[this.state.selected];
-    if (!c || !sb) return;
-    const { error } = await sb.from('clients').update({ cadastro_sent: true, cadastro: cad }).eq('id', c.id);
-    if (error) { this.setState({ cadastroError: error.message }); return; }
-    await this.loadAll();
-    this.setState({ cadastroError: '' });
+    if (!sb) return;
+    this.setState({ pubCadSubmitting: true, pubCadError: '' });
+    const { data, error } = await sb.functions.invoke('smart-api', {
+      body: { action: 'submit-cadastro', token, cadastro: d },
+    });
+    if (error || (data && data.error)) {
+      let msg = (data && data.error) || (error && error.message) || 'Erro ao enviar.';
+      if (error && error.context && typeof error.context.json === 'function') {
+        try { const b = await error.context.json(); if (b && b.error) msg = b.error; } catch (_e) {}
+      }
+      this.setState({ pubCadSubmitting: false, pubCadError: msg });
+      return;
+    }
+    this.setState({ pubCadSubmitting: false, pubCadDone: true });
   }
 
   // -------------------------------------------------------------- formulário --
@@ -1287,6 +1455,30 @@ class Component extends DCLogic {
       formSent: true, formSubmitting: false, formText: '', formDifficulty: '', formTime: '',
       formBlockers: '', formFiles: [], formFileNames: '',
     });
+  }
+
+  // -------------------------------------------------------------- raio-x --
+  setRx(field, e) { this.setState({ raiox: { ...(this.state.raiox || {}), [field]: e.target.value } }); }
+  clickRxFileInput() { const el = document.getElementById('rxFileInput'); if (el) el.click(); }
+  onRxFilesPicked(e) {
+    const files = Array.from(e.target.files || []);
+    this.setState({ raioxFiles: files, raioxFileNames: files.map((f) => f.name).join(', ') });
+  }
+  async submitRaiox() {
+    const c = this.getClients()[this.state.selected];
+    if (!c || !sb) return;
+    this.setState({ raioxSubmitting: true, raioxError: '' });
+    const attachments = [];
+    for (const file of this.state.raioxFiles || []) {
+      const path = this.state.session.user.id + '/raiox-' + Date.now() + '-' + file.name;
+      const { error: upErr } = await sb.storage.from('evidencias').upload(path, file);
+      if (!upErr) attachments.push(path);
+    }
+    const raiox = { ...(this.state.raiox || {}), attachments };
+    const { error } = await sb.from('clients').update({ raiox, raiox_submitted_at: new Date().toISOString() }).eq('id', c.id);
+    if (error) { this.setState({ raioxSubmitting: false, raioxError: error.message }); return; }
+    await this.loadAll();
+    this.setState({ raioxSubmitting: false, raiox: {}, raioxFiles: [], raioxFileNames: '', view: 'projeto' });
   }
 
   // ------------------------------------------------------------------ plano --
@@ -1404,33 +1596,30 @@ class Component extends DCLogic {
     const doing = { icon: 'pending', dotBg: '#fff', dotBorder: '#f59e0b', dotColor: '#f59e0b', lineColor: '#e6ebe8', statusLabel: 'Em andamento', statusBg: '#fef3c7', statusColor: '#b45309', titleColor: '#16211c' };
     const locked = { icon: 'lock', dotBg: '#f1f5f3', dotBorder: '#dde4e0', dotColor: '#b0bcb5', lineColor: '#e6ebe8', statusLabel: 'Bloqueado', statusBg: '#eef1ef', statusColor: '#94a3a0', titleColor: '#9aa8a1' };
 
-    const linkSent = !!client.contractLinkSent;
     const dataReceived = !!client.cadastroSent;
     const approved = !!client.contractApproved;
+    const raioxDone = !!client.raioxSubmittedAt;
     const contratoDone = approved;
 
     const sub = (icon, color, textColor, label, extra) => ({ icon, color, textColor, label, ...(extra || {}) });
     const okBtn = {
-      action: dataReceived && !approved, onAction: () => this.approveContract(),
+      action: dataReceived && !approved && canManage, onAction: () => this.approveContract(),
       btnStyle: 'display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#06140d;',
       btnIcon: 'check_circle', btnLabel: 'Dar OK',
     };
     const contractSubs = [
-      linkSent
-        ? sub('check_circle', '#16a34a', '#16211c', 'Link de assinatura enviado ao cliente')
-        : sub('radio_button_unchecked', '#c2ccc7', '#4a574f', 'Enviar link para assinatura', { action: canManage, onAction: () => this.sendContractLink(), btnStyle: 'display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;border:none;background:#123328;color:#fff;', btnIcon: 'send', btnLabel: 'Enviar link' }),
       dataReceived
-        ? sub('check_circle', '#16a34a', '#16211c', 'Dados da assinatura do contrato recebidos')
-        : sub('radio_button_unchecked', '#c2ccc7', '#8a978f', 'Aguardando dados da assinatura do contrato'),
+        ? sub('check_circle', '#16a34a', '#16211c', 'Dados do contrato preenchidos pelo cliente')
+        : sub('radio_button_unchecked', '#c2ccc7', '#8a978f', 'Aguardando o cliente preencher os dados (link enviado por e-mail)'),
       approved
-        ? sub('verified', '#16a34a', '#16211c', 'Contrato aprovado pelo consultor · OK dado')
-        : sub('rule', '#b45309', '#16211c', 'Validação do consultor (dar "OK")', okBtn),
+        ? sub('verified', '#16a34a', '#16211c', 'Contrato assinado · aprovado pelo consultor')
+        : sub('rule', '#b45309', '#16211c', 'Contrato gerado manualmente e assinado? Validar aqui', okBtn),
     ];
 
     const items = [
-      { phase: 'ONBOARDING · ETAPA 1', title: 'Assinatura do contrato', detail: 'Envio do link, recebimento dos dados e validação final do consultor.', st: contratoDone ? done : doing, hasSub: true, substeps: contractSubs },
-      { phase: 'ONBOARDING · ETAPA 2', title: 'Dados para Raio-X', detail: 'Coleta das informações do negócio para o diagnóstico inicial (Raio-X).', st: contratoDone ? done : locked },
-      { phase: 'ONBOARDING · ETAPA 3', title: 'Reunião de onboarding', detail: 'Reunião inicial de alinhamento com o consultor antes de começar o plano semanal.', st: contratoDone ? doing : locked },
+      { phase: 'ONBOARDING · ETAPA 1', title: 'Assinatura do contrato', detail: 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.', st: contratoDone ? done : doing, hasSub: true, substeps: contractSubs },
+      { phase: 'ONBOARDING · ETAPA 2', title: 'Formulário de Raio-X', detail: 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.', st: raioxDone ? done : (contratoDone ? doing : locked) },
+      { phase: 'ONBOARDING · ETAPA 3', title: 'Reunião de onboarding', detail: 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.', st: raioxDone ? doing : locked },
     ];
     return items.map((i) => ({ phase: i.phase, title: i.title, detail: i.detail, icon: i.st.icon, dotBg: i.st.dotBg, dotBorder: i.st.dotBorder, dotColor: i.st.dotColor, lineColor: i.st.lineColor, statusLabel: i.st.statusLabel, statusBg: i.st.statusBg, statusColor: i.st.statusColor, titleColor: i.st.titleColor, hasSub: !!i.hasSub, substeps: i.substeps || [] }));
   }
@@ -1456,6 +1645,43 @@ class Component extends DCLogic {
         showForm: num === client.week,
       };
     });
+  }
+
+  buildDiagnostico(client) {
+    const rx = client.raiox || {};
+    const row = (label, value, suffix) => {
+      let v = value;
+      if (suffix && typeof v === 'string' && v.trim().endsWith(suffix)) v = v.trim().slice(0, -suffix.length).trim();
+      return { label, value: (v || v === 0) ? (v + (suffix || '')) : '—', empty: !v && v !== 0 };
+    };
+    const cac = rx.cac || ((rx.valorInvestido && rx.vendasMkt) ? (Number(rx.valorInvestido) / Number(rx.vendasMkt)).toFixed(2) : '');
+    return {
+      submitted: !!client.raioxSubmittedAt, notSubmitted: !client.raioxSubmittedAt, submittedDate: fmtDate(client.raioxSubmittedAt),
+      periodo: rx.periodo || '—',
+      marketing: [
+        row('CPL (custo por lead)', rx.cpl, ''),
+        row('Nº de leads desejados', rx.leadsDesejados, ''),
+        row('Valor investido', rx.valorInvestido, ''),
+        row('Taxa de conversão', rx.txConversao, '%'),
+        row('Vendas geradas', rx.vendasMkt, ''),
+        row('CAC (calculado se vazio)', cac, ''),
+        row('Visitação', rx.visitacao, ''),
+      ],
+      vendas: [
+        row('Resultados gerados na recepção', rx.resultadosRecepcao),
+        row('Perfil ideal do colaborador', rx.perfilColaborador),
+        row('Rotinas diárias do time comercial', rx.rotinasComercial),
+        row('Bonificação e comissionamento', rx.bonificacao),
+      ],
+      evasao: [
+        row('Resultados gerados por professor', rx.resultadosProfessor),
+        row('Frequência de acesso (seg/sex)', rx.frequenciaAcesso),
+        row('Controle de alunos faltosos', rx.controleFaltosos),
+        row('Frequência de matriculados (90 dias)', rx.controleFrequencia90),
+        row('Churn', rx.churn, '%'),
+      ],
+      attachmentsCount: (rx.attachments || []).length,
+    };
   }
 
   buildBoard(clients) {
@@ -1487,6 +1713,21 @@ class Component extends DCLogic {
 
   // ------------------------------------------------------------- renderVals --
   renderVals() {
+    const cadastroToken = new URLSearchParams(window.location.search).get('cadastro');
+    if (cadastroToken) {
+      return {
+        isPublicCadastro: true, notLoggedIn: false, isLoggedIn: false,
+        pubCadDone: !!this.state.pubCadDone, pubCadForm: !this.state.pubCadDone,
+        pubCadError: this.state.pubCadError, pubCad: this.state.pubCad || {},
+        pubCadBtnLabel: this.state.pubCadSubmitting ? 'Enviando…' : 'Enviar dados',
+        setPubCadResponsavel: (e) => this.setPubCadResponsavel(e), setPubCadEmail: (e) => this.setPubCadEmail(e),
+        setPubCadCpf: (e) => this.setPubCadCpf(e), setPubCadNomeAcademia: (e) => this.setPubCadNomeAcademia(e),
+        setPubCadCnpj: (e) => this.setPubCadCnpj(e), setPubCadTelefone: (e) => this.setPubCadTelefone(e),
+        setPubCadEndereco: (e) => this.setPubCadEndereco(e), setPubCadCep: (e) => this.setPubCadCep(e),
+        setPubCadSocioUnico: (e) => this.setPubCadSocioUnico(e), setPubCadCargo: (e) => this.setPubCadCargo(e),
+        submitPubCad: () => this.submitPublicCadastro(cadastroToken),
+      };
+    }
     if (!this.state.booted) {
       return { notLoggedIn: false, isLoggedIn: false };
     }
@@ -1522,6 +1763,8 @@ class Component extends DCLogic {
     const client = clients[selectedIdx] || { name: '', initials: '', avatarBg: '', atividade: 'no_prazo', financeiro: 'em_dia', week: 1, totalWeeks: this.getPlan().length || 12, progress: 0, progressPct: '0%', plan: '', startDate: '', consultant: '' };
     const view = this.state.view;
 
+    const raioxPending = isCliente && !!client.contractApproved && !client.raioxSubmittedAt;
+
     const consultorNav = [
       { id: 'dashboard', icon: 'grid_view', label: 'Dashboard' },
       { id: 'clientes', icon: 'groups', label: 'Clientes' },
@@ -1532,6 +1775,7 @@ class Component extends DCLogic {
     const clienteNav = [
       { id: 'projeto', icon: 'track_changes', label: 'Minha Jornada' },
       { id: 'formulario', icon: 'assignment', label: 'Formulário da Semana' },
+      ...(raioxPending ? [{ id: 'raiox', icon: 'query_stats', label: 'Raio-X do negócio', badge: '1' }] : []),
     ];
     const adminNav = [
       { id: 'dashboard', icon: 'grid_view', label: 'Dashboard' },
@@ -1571,6 +1815,8 @@ class Component extends DCLogic {
       financeiro: { t: 'Financeiro', i: 'payments', s: 'Pagamento em dia, inadimplência e régua de cobrança' },
       auditoria: { t: 'Auditoria', i: 'folder_open', s: isConsultor ? 'Pasta de cada cliente — textos e áudios registrados' : 'Seu histórico registrado' },
       cadastro: { t: 'Ficha do contrato', i: 'contract_edit', s: 'Dados para geração do contrato' },
+      raiox: { t: 'Raio-X do negócio', i: 'query_stats', s: 'Diagnóstico de marketing, vendas e evasão' },
+      diagnostico: { t: 'Diagnóstico · Raio-X', i: 'query_stats', s: 'Uso interno — apresentar na reunião de onboarding' },
     };
     const tt = titles[view] || titles.dashboard;
 
@@ -1629,13 +1875,6 @@ class Component extends DCLogic {
       emailIconColor: na.email ? '#15803d' : '#8a978f', whatsIconColor: na.whats ? '#15803d' : '#8a978f',
     };
 
-    const payMethods = PAY_METHODS.map((p) => ({
-      ...p, pick: () => this.pickPayMethod(p.label),
-      iconColor: (this.state.cad || {}).pagamento === p.label ? '#15803d' : '#4a574f',
-      cardStyle: 'border:1.5px solid ' + ((this.state.cad || {}).pagamento === p.label ? '#22c55e' : '#e3e8e5') + '; background:' + ((this.state.cad || {}).pagamento === p.label ? '#f0fdf4' : '#fff') + '; border-radius:11px; padding:14px 10px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;',
-    }));
-
-    const cad = this.state.cad || {};
 
     return {
       isLoggedIn: true, notLoggedIn: false,
@@ -1690,6 +1929,10 @@ class Component extends DCLogic {
       showDashExtras: view === 'dashboard', showTable: view === 'clientes',
       isProjeto: view === 'projeto', isJornada: view === 'jornada', isFormulario: view === 'formulario',
       isFinanceiro: view === 'financeiro', isAuditoria: view === 'auditoria', isCadastro: view === 'cadastro',
+      isRaiox: view === 'raiox' && isCliente,
+      isDiagnostico: view === 'diagnostico' && isConsultor,
+      raioxPending, goRaiox: () => this.go('raiox'), goDiagnostico: () => this.go('diagnostico'),
+      raioxDone: !!client.raioxSubmittedAt,
 
       statCards, clients, clientCount: clients.length,
       attentionClients: clients.filter((c) => c.atividade === 'atrasado' || c.financeiro === 'inadimplente'),
@@ -1713,22 +1956,29 @@ class Component extends DCLogic {
           set: () => this.setClientStatus(selectedIdx, 'financeiro', k),
         };
       }),
-      cadastroError: this.state.cadastroError, cad,
-      openCadastro: () => this.openCadastro(), cadastroSent: !!client.cadastroSent, submitCadastro: () => this.submitCadastro(),
-      setCadEmpresa: (e) => this.setCadEmpresa(e), setCadCnpj: (e) => this.setCadCnpj(e), setCadRepresentante: (e) => this.setCadRepresentante(e),
-      setCadTelefone: (e) => this.setCadTelefone(e), setCadCep: (e) => this.setCadCep(e), setCadNumero: (e) => this.setCadNumero(e),
-      setCadEndereco: (e) => this.setCadEndereco(e), setCadObs: (e) => this.setCadObs(e),
-      payMethods,
       contract: (() => {
         const filled = !!client.cadastroSent;
-        const slug = (client.name || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
         const copied = !!this.state.linkCopied;
+        const cad = client.cadastro || {};
         return {
-          link: window.location.host + '/contrato/' + slug,
+          link: client.cadastroToken ? (window.location.origin + '/?cadastro=' + client.cadastroToken) : '',
           icon: filled ? 'verified' : 'contract_edit', iconBg: filled ? '#dcfce7' : '#fef3c7', iconColor: filled ? '#15803d' : '#b45309',
           cardBg: filled ? '#f0fdf4' : '#fffdf5', cardBorder: filled ? '#bbf3ce' : '#f5e6c0',
-          statusText: filled ? 'Dados recebidos — contrato pronto para assinatura.' : 'Aguardando o cliente preencher os dados da empresa e pagamento.',
+          statusText: filled ? 'Dados recebidos — gere o contrato manualmente e dê "OK" quando assinado.' : 'Aguardando o cliente preencher os dados da empresa (link enviado por e-mail).',
           copyIcon: copied ? 'check' : 'content_copy', copyLabel: copied ? 'Copiado' : 'Copiar',
+          showData: filled,
+          fields: filled ? [
+            { label: 'Responsável legal', value: cad.responsavel },
+            { label: 'E-mail', value: cad.email },
+            { label: 'CPF', value: cad.cpf },
+            { label: 'Nome da academia', value: cad.nomeAcademia },
+            { label: 'CNPJ', value: cad.cnpj },
+            { label: 'Telefone', value: cad.telefone },
+            { label: 'Endereço', value: cad.endereco },
+            { label: 'CEP', value: cad.cep },
+            { label: 'Sócio único?', value: cad.socioUnico },
+            { label: 'Cargo formal', value: cad.cargo },
+          ].filter((f) => f.value) : [],
         };
       })(),
       copyContractLink: () => this.copyContractLink(),
@@ -1769,6 +2019,24 @@ class Component extends DCLogic {
       setFormText: (e) => this.setFormText(e), setFormDifficulty: (e) => this.setFormDifficulty(e), setFormTime: (e) => this.setFormTime(e), setFormBlockers: (e) => this.setFormBlockers(e),
       clickFileInput: () => this.clickFileInput(), onFilesPicked: (e) => this.onFilesPicked(e), formFileNames: this.state.formFileNames,
       formSent: this.state.formSent, nextWeekNum, goFormulario: () => this.goFormulario(),
+
+      rx: this.state.raiox || {},
+      setRxPeriodo: (e) => this.setRx('periodo', e),
+      setRxCpl: (e) => this.setRx('cpl', e), setRxLeadsDesejados: (e) => this.setRx('leadsDesejados', e),
+      setRxValorInvestido: (e) => this.setRx('valorInvestido', e), setRxTxConversao: (e) => this.setRx('txConversao', e),
+      setRxVendasMkt: (e) => this.setRx('vendasMkt', e), setRxCac: (e) => this.setRx('cac', e),
+      setRxVisitacao: (e) => this.setRx('visitacao', e),
+      setRxResultadosRecepcao: (e) => this.setRx('resultadosRecepcao', e), setRxPerfilColaborador: (e) => this.setRx('perfilColaborador', e),
+      setRxRotinasComercial: (e) => this.setRx('rotinasComercial', e), setRxBonificacao: (e) => this.setRx('bonificacao', e),
+      setRxResultadosProfessor: (e) => this.setRx('resultadosProfessor', e), setRxFrequenciaAcesso: (e) => this.setRx('frequenciaAcesso', e),
+      setRxControleFaltosos: (e) => this.setRx('controleFaltosos', e), setRxControleFrequencia90: (e) => this.setRx('controleFrequencia90', e),
+      setRxChurn: (e) => this.setRx('churn', e),
+      clickRxFileInput: () => this.clickRxFileInput(), onRxFilesPicked: (e) => this.onRxFilesPicked(e),
+      raioxFileNames: this.state.raioxFileNames, raioxError: this.state.raioxError,
+      submitRaiox: () => this.submitRaiox(),
+      submitRaioxLabel: this.state.raioxSubmitting ? 'Enviando…' : 'Enviar diagnóstico',
+
+      diagnostico: this.buildDiagnostico(client),
 
       finStats, finClients: clients, cobranca,
       auditFolders,
