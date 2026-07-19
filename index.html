@@ -246,6 +246,13 @@
       <!-- ===================== PROJETO / MINHA JORNADA ===================== -->
       <sc-if value="{{ isProjeto }}" hint-placeholder-val="">
         <div style="animation:gpFade .3s ease; max-width:1240px; margin:0 auto;">
+          <sc-if value="{{ addClientNotice }}" hint-placeholder-val="">
+            <div style="background:#f0fdf4; border:1px solid #bbf3ce; border-radius:12px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:10px; color:#15803d; font-weight:600; font-size:13.5px;">
+              <span class="msym" style="font-size:19px;">task_alt</span>
+              <span style="flex:1;">{{ addClientNotice }}</span>
+              <button sc-camel-on-click="{{ dismissAddClientNotice }}" style="background:none; border:none; cursor:pointer; color:#15803d;"><span class="msym" style="font-size:18px;">close</span></button>
+            </div>
+          </sc-if>
           <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:18px; padding:24px 26px; margin-bottom:20px;">
             <div style="display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap;">
               <div style="width:64px; height:64px; border-radius:16px; background:{{ client.avatarBg }}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:24px; color:#fff; flex-shrink:0;">{{ client.initials }}</div>
@@ -1126,6 +1133,7 @@ class Component extends DCLogic {
       body: {
         name: d.name.trim(), email: d.email.trim(), plan: d.plan || 'SOS Academias',
         consultant: d.consultant || (this.state.consultants || [])[0] || '', whatsapp: d.whatsapp || '',
+        siteUrl: window.location.origin,
       },
     });
     if (error || (data && data.error)) {
@@ -1137,6 +1145,9 @@ class Component extends DCLogic {
     this.setState({
       showAddClient: false, newClient: {}, addClientLoading: false, addClientError: '',
       selected: idx >= 0 ? idx : 0, view: 'projeto',
+      addClientNotice: data.emailSent
+        ? 'Cliente criado e e-mail de boas-vindas enviado!'
+        : 'Cliente criado, mas o e-mail não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + '). Senha temporária: ' + data.tempPassword,
     });
   }
 
@@ -1690,6 +1701,7 @@ class Component extends DCLogic {
       addClient: () => this.addClient(), addClientError: this.state.addClientError,
       addClientBtnIcon: this.state.addClientLoading ? 'hourglass_top' : 'check_circle',
       addClientBtnLabel: this.state.addClientLoading ? 'Criando…' : 'Criar projeto e gerar link do contrato',
+      addClientNotice: this.state.addClientNotice || '', dismissAddClientNotice: () => this.setState({ addClientNotice: '' }),
       stop: (e) => this.stop(e),
       nc: this.state.newClient || {},
       consultantOptions: this.state.consultants || [],
