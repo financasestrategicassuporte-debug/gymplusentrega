@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/30169536/README.md)
+[README.md](https://github.com/user-attachments/files/30282673/README.md)
 # GYMPLUS · Plataforma
 
 Plataforma de acompanhamento de clientes (jornada semanal, financeiro,
@@ -34,18 +34,24 @@ dados são gravados no banco e o login é de verdade.
    cliente (visão do admin/consultor).
 3. Seu time gera o contrato manualmente (fora da plataforma) com esses
    dados. Depois de assinado, o admin clica em **"Aprovar contrato"**.
-4. Isso libera automaticamente o login do cliente (e-mail com usuário e
-   senha temporária) e agenda, para **3 minutos depois**, um segundo
-   e-mail com o link do **formulário de Raio-X** (diagnóstico de
-   marketing, vendas e evasão do negócio, com upload de arquivos).
-5. Depois que o cliente envia o Raio-X, o consultor/admin pode abrir o
-   **Diagnóstico** (visão só interna, nunca enviada ao cliente) para
-   levar para a reunião de onboarding.
-6. A partir daí segue a jornada semanal normal: cada tarefa só libera a
+4. **3 minutos depois** (atraso real, não simulado), o cliente recebe por
+   e-mail o link — também **público, sem precisar de login** — do
+   **formulário de Raio-X** (diagnóstico de marketing, vendas e evasão
+   do negócio, com upload de arquivos).
+5. Assim que o cliente envia o Raio-X, a plataforma cria o login dele na
+   hora e manda por e-mail o usuário e a senha de acesso.
+6. Com os dados do Raio-X, o consultor/admin abre o **Diagnóstico**
+   (visão só interna, nunca enviada ao cliente automaticamente) e, se
+   quiser, pode **baixar um relatório em HTML** e/ou **mandar um PDF por
+   e-mail ao cliente** com os pontos de melhoria, para usar na reunião
+   de onboarding.
+7. A partir daí segue a jornada semanal normal: cada tarefa só libera a
    próxima depois que o cliente preenche o formulário da semana atual.
 
-O atraso de 3 minutos do e-mail do Raio-X é real (não simulado) — feito
-com `pg_cron` no Supabase, explicado no passo 3 abaixo.
+Etapas 1-3 (contrato) e 4-5 (Raio-X → acesso) ficam com título e
+descrição editáveis pelo admin em **Plano de Ação**, antes da lista de
+semanas — a mudança aparece automaticamente na timeline de onboarding
+do cliente e do admin/consultor.
 
 ## O que **não** é real (fica para uma próxima etapa, se quiser)
 
@@ -55,6 +61,10 @@ com `pg_cron` no Supabase, explicado no passo 3 abaixo.
   transcrição real).
 - Ícone "Pix" na ficha de contrato usa um nome de ícone que a fonte de
   ícones do Google não possui — aparece como texto em vez de um ícone.
+- Os anexos do formulário público de Raio-X (planilhas, prints) viajam
+  como texto (base64) dentro da mesma chamada que salva o formulário —
+  funciona bem para arquivos pequenos/médios (poucos MB), mas não é
+  indicado para arquivos grandes (vídeos, PDFs muito pesados).
 
 ---
 
@@ -76,7 +86,9 @@ com `pg_cron` no Supabase, explicado no passo 3 abaixo.
 > ```sql
 > alter table public.clients add column if not exists cadastro_token uuid not null default gen_random_uuid();
 > alter table public.clients add column if not exists raiox jsonb not null default '{}'::jsonb;
+> alter table public.clients add column if not exists raiox_token uuid not null default gen_random_uuid();
 > alter table public.clients add column if not exists raiox_submitted_at timestamptz;
+> alter table public.clients add column if not exists diagnostico_sent_at timestamptz;
 >
 > create table if not exists public.scheduled_emails (
 >   id uuid primary key default gen_random_uuid(),
@@ -89,9 +101,33 @@ com `pg_cron` no Supabase, explicado no passo 3 abaixo.
 > );
 > alter table public.scheduled_emails enable row level security;
 > create policy "scheduled_emails_staff" on public.scheduled_emails for select using (public.is_staff());
+>
+> create table if not exists public.onboarding_steps (
+>   id uuid primary key default gen_random_uuid(),
+>   step_key text not null unique,
+>   num int not null,
+>   title text not null,
+>   detail text not null default '',
+>   created_at timestamptz not null default now()
+> );
+> alter table public.onboarding_steps enable row level security;
+> create policy "onboarding_steps_select_authenticated" on public.onboarding_steps for select using (auth.uid() is not null);
+> create policy "onboarding_steps_write_staff" on public.onboarding_steps for all using (public.is_staff()) with check (public.is_staff());
+>
+> insert into public.onboarding_steps (step_key, num, title, detail)
+> select * from (values
+>   ('contrato', 1, 'Assinatura do contrato', 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.'),
+>   ('raiox', 2, 'Formulário de Raio-X', 'Diagnóstico do negócio (marketing, vendas e evasão), enviado por e-mail (link público, sem precisar logar) 3 minutos após a aprovação do contrato. Ao enviar, o cliente recebe o acesso à plataforma.'),
+>   ('reuniao', 3, 'Reunião de onboarding', 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.')
+> ) as v(step_key, num, title, detail)
+> where not exists (select 1 from public.onboarding_steps);
 > ```
-> Depois disso, siga o passo 3 (Edge Function) e o novo passo "Agendar o
-> e-mail do Raio-X (pg_cron)" mais abaixo.
+> Depois disso, siga o passo 3 (Edge Function, com o código **novo** —
+> se você já tinha publicado antes, é preciso colar o código atualizado
+> por cima) e o passo "Agendar o e-mail do Raio-X (pg_cron)" mais abaixo.
+> Se o `pg_cron` já estava configurado de uma versão anterior, não
+> precisa mexer nele — o job continua funcionando igual, só o conteúdo
+> do e-mail que ele dispara mudou (agora manda o link público do Raio-X).
 
 ### 2. Criar os usuários admin e consultor
 
@@ -135,12 +171,15 @@ o endereço de verdade da função é o que aparece na **URL** dela (ex.:
 pelo nome que estiver depois de `/v1/` na URL — confira se bate com o
 que está em `sb.functions.invoke('...')` no arquivo.
 
-#### E-mails automáticos (link do contrato, login do cliente, Raio-X)
+#### E-mails automáticos (link do contrato, Raio-X, login do cliente)
 
-A plataforma manda três e-mails automáticos ao longo do onboarding (link
-do formulário de contrato ao cadastrar o cliente, login/senha quando o
-admin aprova o contrato, e o link do Raio-X 3 minutos depois). Todos
-saem pelo Gmail. Para ativar:
+A plataforma manda três e-mails automáticos ao longo do onboarding: (1)
+link do formulário de contrato ao cadastrar o cliente, (2) link do
+formulário de Raio-X 3 minutos depois que o admin aprova o contrato, e
+(3) login e senha de acesso assim que o cliente envia o Raio-X. Depois,
+o consultor ainda pode mandar manualmente um quarto e-mail com o PDF do
+diagnóstico (botão "Enviar PDF ao cliente" na tela de Diagnóstico).
+Todos saem pelo Gmail. Para ativar:
 
 1. Na conta do Gmail que vai enviar os e-mails, ative a **verificação em
    duas etapas** (Conta Google → Segurança).
@@ -258,6 +297,7 @@ E acessar `http://localhost:8000/index.html`.
 index.html                              → todo o front-end (visual + lógica)
 config.js                               → URL e anon key do Supabase (edite aqui)
 dc-runtime.js, react*.js, supabase.js    → bibliotecas usadas pela página — não precisa mexer
+html2pdf.bundle.min.js                  → gera o PDF do diagnóstico no navegador (botão "Enviar PDF ao cliente") — não precisa mexer
 supabase-schema.sql                     → tabelas, permissões e dados iniciais do banco (rodar no SQL Editor do Supabase)
-supabase-edge-function-create-client.ts → função que cria o login de cada cliente novo (colar no Edge Functions do Supabase)
+supabase-edge-function-create-client.ts → função com todas as ações do backend (colar no Edge Functions do Supabase)
 ```
