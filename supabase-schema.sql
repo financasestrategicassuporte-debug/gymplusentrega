@@ -80,7 +80,9 @@ create table if not exists public.clients (
   cadastro jsonb not null default '{}'::jsonb,
   cadastro_token uuid not null default gen_random_uuid(),
   raiox jsonb not null default '{}'::jsonb,
+  raiox_token uuid not null default gen_random_uuid(),
   raiox_submitted_at timestamptz,
+  diagnostico_sent_at timestamptz,
   created_at timestamptz not null default now()
 );
 
@@ -322,7 +324,7 @@ where not exists (select 1 from public.plan_weeks);
 insert into public.onboarding_steps (step_key, num, title, detail)
 select * from (values
   ('contrato', 1, 'Assinatura do contrato', 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.'),
-  ('raiox', 2, 'Formulário de Raio-X', 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.'),
+  ('raiox', 2, 'Formulário de Raio-X', 'Diagnóstico do negócio (marketing, vendas e evasão), enviado por e-mail (link público, sem precisar logar) 3 minutos após a aprovação do contrato. Ao enviar, o cliente recebe o acesso à plataforma.'),
   ('reuniao', 3, 'Reunião de onboarding', 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.')
 ) as v(step_key, num, title, detail)
 where not exists (select 1 from public.onboarding_steps);
