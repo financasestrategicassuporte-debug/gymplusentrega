@@ -6,6 +6,7 @@
 <title>GYMPLUS · Plataforma</title>
 <script src="supabase.js"></script>
 <script src="config.js"></script>
+<script src="html2pdf.bundle.min.js"></script>
 <script>
   // Serve React/ReactDOM do próprio site em vez de baixar do unpkg.com em
   // tempo de execução — mais rápido e funciona mesmo se o unpkg estiver fora.
@@ -115,6 +116,94 @@
             <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ pubCadError }}</div>
           </sc-if>
           <button sc-camel-on-click="{{ submitPubCad }}" style="width:100%; background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:800; padding:14px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 18px rgba(34,197,94,.35);" style-hover="filter:brightness(1.05);">{{ pubCadBtnLabel }} <span class="msym" style="font-size:20px;">send</span></button>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isPublicRaiox }}" hint-placeholder-val="">
+  <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(140deg,#0d2a20 0%,#123328 55%,#0a2019 100%);" class="gp-login-outer">
+    <div style="width:100%; max-width:820px; animation:gpFade .4s ease;">
+      <div style="display:flex; align-items:center; gap:13px; margin-bottom:24px;">
+        <div style="width:44px; height:44px; border-radius:13px; background:linear-gradient(135deg,#22c55e,#15803d); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(34,197,94,.4); flex-shrink:0;"><span class="msym" style="font-size:26px; color:#06140d;">fitness_center</span></div>
+        <div><div style="font-size:22px; font-weight:800; color:#fff; letter-spacing:-.5px;">GYM<span style="color:#4ade80;">PLUS</span></div><div style="font-size:11px; font-weight:600; color:#6f9585; letter-spacing:1.5px;">DIAGNÓSTICO DO NEGÓCIO · RAIO-X</div></div>
+      </div>
+
+      <sc-if value="{{ pubRxDone }}" hint-placeholder-val="">
+        <div style="background:#fbfcfb; border-radius:20px; padding:40px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35);">
+          <span class="msym" style="font-size:48px; color:#16a34a;">task_alt</span>
+          <h2 style="font-size:20px; font-weight:800; color:#16211c; margin-top:12px;">Raio-X recebido!</h2>
+          <p style="font-size:14px; color:#6b7c73; margin-top:8px;">Obrigado! Em instantes você recebe por e-mail o login e a senha de acesso à plataforma.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ pubRxForm }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fbfcfb; border-radius:20px; padding:30px 30px 28px; box-shadow:0 24px 60px rgba(0,0,0,.35);">
+        <h2 style="font-size:19px; font-weight:800; color:#16211c;">Formulário de Raio-X</h2>
+        <p style="font-size:13px; color:#6b7c73; margin-top:3px; margin-bottom:20px;">Preencha com o máximo de detalhes possível — esses dados são usados para montar seu diagnóstico e plano de ação. Ao enviar, você recebe o acesso à plataforma por e-mail.</p>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Período de análise</label>
+            <sc-raw-select value="{{ pubRx.periodo }}" sc-camel-on-change="{{ setPubRxPeriodo }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
+              <option value="">Selecione</option>
+              <option value="6 meses">6 meses</option>
+              <option value="12 meses">12 meses</option>
+            </sc-raw-select>
+          </div>
+
+          <div>
+            <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE MARKETING · TRÁFEGO PAGO</div>
+            <div class="gp-grid-3col" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CPL (custo por lead)</label><input value="{{ pubRx.cpl }}" sc-camel-on-input="{{ setPubRxCpl }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nº de leads desejados</label><input value="{{ pubRx.leadsDesejados }}" sc-camel-on-input="{{ setPubRxLeadsDesejados }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Valor investido</label><input value="{{ pubRx.valorInvestido }}" sc-camel-on-input="{{ setPubRxValorInvestido }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Taxa de conversão (%)</label><input value="{{ pubRx.txConversao }}" sc-camel-on-input="{{ setPubRxTxConversao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Vendas geradas</label><input value="{{ pubRx.vendasMkt }}" sc-camel-on-input="{{ setPubRxVendasMkt }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CAC</label><input value="{{ pubRx.cac }}" sc-camel-on-input="{{ setPubRxCac }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+            </div>
+            <div style="margin-top:14px;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Visitação</label><input value="{{ pubRx.visitacao }}" sc-camel-on-input="{{ setPubRxVisitacao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+          </div>
+
+          <div>
+            <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE VENDAS</div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada colaborador gera na recepção?</label><textarea value="{{ pubRx.resultadosRecepcao }}" sc-camel-on-input="{{ setPubRxResultadosRecepcao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Perfil ideal do colaborador</label><textarea value="{{ pubRx.perfilColaborador }}" sc-camel-on-input="{{ setPubRxPerfilColaborador }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Rotinas diárias do time comercial</label><textarea value="{{ pubRx.rotinasComercial }}" sc-camel-on-input="{{ setPubRxRotinasComercial }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Tipos de bonificação e comissionamento</label><textarea value="{{ pubRx.bonificacao }}" sc-camel-on-input="{{ setPubRxBonificacao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE EVASÃO</div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada professor gera?</label><textarea value="{{ pubRx.resultadosProfessor }}" sc-camel-on-input="{{ setPubRxResultadosProfessor }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Frequência de acesso de segunda e de sexta</label><textarea value="{{ pubRx.frequenciaAcesso }}" sc-camel-on-input="{{ setPubRxFrequenciaAcesso }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de alunos faltosos</label><textarea value="{{ pubRx.controleFaltosos }}" sc-camel-on-input="{{ setPubRxControleFaltosos }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de frequência de alunos matriculados nos últimos 90 dias</label><textarea value="{{ pubRx.controleFrequencia90 }}" sc-camel-on-input="{{ setPubRxControleFrequencia90 }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
+              <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Churn (% saída total de alunos ÷ base de alunos do início do mês)</label><input value="{{ pubRx.churn }}" sc-camel-on-input="{{ setPubRxChurn }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Arquivos de apoio (planilhas, prints, relatórios)</label>
+            <div sc-camel-on-click="{{ clickPubRxFileInput }}" style="border:2px dashed #cdd6d1; border-radius:12px; padding:24px; text-align:center; background:#f6f9f7; cursor:pointer;" style-hover="border-color:#22c55e; background:#f0fdf4;">
+              <span class="msym" style="font-size:30px; color:#a3b0a8;">cloud_upload</span>
+              <div style="font-size:13px; font-weight:700; color:#4a574f; margin-top:4px;">Clique para enviar arquivos</div>
+            </div>
+            <input id="pubRxFileInput" type="file" multiple style="display:none;" sc-camel-on-change="{{ onPubRxFilesPicked }}">
+            <sc-if value="{{ pubRxFileNames }}" hint-placeholder-val="">
+              <div style="font-size:12px; color:#4a574f; margin-top:8px; font-weight:600;">Selecionado(s): {{ pubRxFileNames }}</div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ pubRxError }}" hint-placeholder-val="">
+            <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ pubRxError }}</div>
+          </sc-if>
+          <button sc-camel-on-click="{{ submitPubRx }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:14px; font-weight:800; padding:13px 24px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(34,197,94,.3);" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:20px;">send</span>{{ submitPubRxLabel }}</button>
         </div>
       </div>
       </sc-if>
@@ -783,85 +872,10 @@
         </div>
       </sc-if>
 
-      <!-- ===================== CADASTRO / CONTRATO ===================== -->
-      <!-- ===================== RAIO-X (CLIENTE) ===================== -->
-      <sc-if value="{{ isRaiox }}" hint-placeholder-val="">
-        <div style="animation:gpFade .3s ease; max-width:820px; margin:0 auto;">
-          <div style="background:linear-gradient(135deg,#123328,#0d2a20); border-radius:16px; padding:20px 24px; margin-bottom:20px; display:flex; align-items:center; gap:14px;">
-            <div style="width:46px; height:46px; border-radius:12px; background:#22c55e; display:flex; align-items:center; justify-content:center;"><span class="msym" style="font-size:26px; color:#06140d;">query_stats</span></div>
-            <div style="flex:1;"><div style="font-size:12px; font-weight:800; letter-spacing:.5px; color:#4ade80;">DIAGNÓSTICO DO NEGÓCIO</div><div style="font-size:18px; font-weight:800; color:#fff;">Formulário de Raio-X</div></div>
-          </div>
-
-          <div style="background:#fbfcfb; border:1px solid #e3e8e5; border-radius:16px; padding:26px;">
-            <p style="font-size:14px; color:#6b7c73; margin-bottom:22px; line-height:1.5;">Preencha com o máximo de detalhes possível — esses dados são usados para montar seu diagnóstico e plano de ação.</p>
-            <div style="display:flex; flex-direction:column; gap:22px;">
-              <div>
-                <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Período de análise</label>
-                <sc-raw-select value="{{ rx.periodo }}" sc-camel-on-change="{{ setRxPeriodo }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;">
-                  <option value="">Selecione</option>
-                  <option value="6 meses">6 meses</option>
-                  <option value="12 meses">12 meses</option>
-                </sc-raw-select>
-              </div>
-
-              <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE MARKETING · TRÁFEGO PAGO</div>
-                <div class="gp-grid-3col" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CPL (custo por lead)</label><input value="{{ rx.cpl }}" sc-camel-on-input="{{ setRxCpl }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Nº de leads desejados</label><input value="{{ rx.leadsDesejados }}" sc-camel-on-input="{{ setRxLeadsDesejados }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Valor investido</label><input value="{{ rx.valorInvestido }}" sc-camel-on-input="{{ setRxValorInvestido }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Taxa de conversão (%)</label><input value="{{ rx.txConversao }}" sc-camel-on-input="{{ setRxTxConversao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Vendas geradas</label><input value="{{ rx.vendasMkt }}" sc-camel-on-input="{{ setRxVendasMkt }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">CAC</label><input value="{{ rx.cac }}" sc-camel-on-input="{{ setRxCac }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                </div>
-                <div style="margin-top:14px;"><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Visitação</label><input value="{{ rx.visitacao }}" sc-camel-on-input="{{ setRxVisitacao }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-              </div>
-
-              <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE VENDAS</div>
-                <div style="display:flex; flex-direction:column; gap:14px;">
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada colaborador gera na recepção?</label><textarea value="{{ rx.resultadosRecepcao }}" sc-camel-on-input="{{ setRxResultadosRecepcao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Perfil ideal do colaborador</label><textarea value="{{ rx.perfilColaborador }}" sc-camel-on-input="{{ setRxPerfilColaborador }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Rotinas diárias do time comercial</label><textarea value="{{ rx.rotinasComercial }}" sc-camel-on-input="{{ setRxRotinasComercial }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Tipos de bonificação e comissionamento</label><textarea value="{{ rx.bonificacao }}" sc-camel-on-input="{{ setRxBonificacao }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                </div>
-              </div>
-
-              <div>
-                <div style="font-size:11px; font-weight:800; letter-spacing:.5px; color:#16a34a; margin-bottom:12px;">KPIS DE EVASÃO</div>
-                <div style="display:flex; flex-direction:column; gap:14px;">
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Quais resultados cada professor gera?</label><textarea value="{{ rx.resultadosProfessor }}" sc-camel-on-input="{{ setRxResultadosProfessor }}" style="width:100%; min-height:70px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Frequência de acesso de segunda e de sexta</label><textarea value="{{ rx.frequenciaAcesso }}" sc-camel-on-input="{{ setRxFrequenciaAcesso }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de alunos faltosos</label><textarea value="{{ rx.controleFaltosos }}" sc-camel-on-input="{{ setRxControleFaltosos }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Controle de frequência de alunos matriculados nos últimos 90 dias</label><textarea value="{{ rx.controleFrequencia90 }}" sc-camel-on-input="{{ setRxControleFrequencia90 }}" style="width:100%; min-height:60px; resize:vertical; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea></div>
-                  <div><label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Churn (% saída total de alunos ÷ base de alunos do início do mês)</label><input value="{{ rx.churn }}" sc-camel-on-input="{{ setRxChurn }}" style="width:100%; border:1px solid #d5ddd8; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:14px; color:#16211c; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></div>
-                </div>
-              </div>
-
-              <div>
-                <label style="font-size:12px; font-weight:700; color:#16211c; display:block; margin-bottom:6px;">Arquivos de apoio (planilhas, prints, relatórios)</label>
-                <div sc-camel-on-click="{{ clickRxFileInput }}" style="border:2px dashed #cdd6d1; border-radius:12px; padding:24px; text-align:center; background:#f6f9f7; cursor:pointer;" style-hover="border-color:#22c55e; background:#f0fdf4;">
-                  <span class="msym" style="font-size:30px; color:#a3b0a8;">cloud_upload</span>
-                  <div style="font-size:13px; font-weight:700; color:#4a574f; margin-top:4px;">Clique para enviar arquivos</div>
-                </div>
-                <input id="rxFileInput" type="file" multiple style="display:none;" sc-camel-on-change="{{ onRxFilesPicked }}">
-                <sc-if value="{{ raioxFileNames }}" hint-placeholder-val="">
-                  <div style="font-size:12px; color:#4a574f; margin-top:8px; font-weight:600;">Selecionado(s): {{ raioxFileNames }}</div>
-                </sc-if>
-              </div>
-
-              <sc-if value="{{ raioxError }}" hint-placeholder-val="">
-                <div style="background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; font-size:12.5px; font-weight:600; border-radius:10px; padding:10px 13px;">{{ raioxError }}</div>
-              </sc-if>
-              <button sc-camel-on-click="{{ submitRaiox }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:14px; font-weight:800; padding:13px 24px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(34,197,94,.3);" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:20px;">send</span>{{ submitRaioxLabel }}</button>
-            </div>
-          </div>
-        </div>
-      </sc-if>
-
       <!-- ===================== DIAGNÓSTICO / RAIO-X (ADMIN, INTERNO) ===================== -->
       <sc-if value="{{ isDiagnostico }}" hint-placeholder-val="">
         <div style="animation:gpFade .3s ease; max-width:960px; margin:0 auto;">
+          <div id="diagnosticoPrintRoot">
           <div style="background:linear-gradient(135deg,#123328,#0d2a20); border-radius:18px; padding:22px 26px; margin-bottom:20px; display:flex; align-items:center; gap:16px;">
             <span class="msym" style="font-size:28px; color:#4ade80;">query_stats</span>
             <div style="flex:1;">
@@ -905,6 +919,20 @@
             <span class="msym" style="font-size:32px; color:#a3b0a8;">hourglass_empty</span>
             <p style="font-size:14px; color:#6b7c73; margin-top:8px;">O cliente ainda não preencheu o Raio-X.</p>
           </div>
+          </sc-if>
+          </div>
+
+          <sc-if value="{{ diagnostico.submitted }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
+            <button sc-camel-on-click="{{ downloadDiagnosticoHtml }}" style="background:#fff; color:#16211c; border:1px solid #d5ddd8; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; padding:11px 18px; border-radius:11px; display:flex; align-items:center; gap:8px;" style-hover="background:#f6f9f7;"><span class="msym" style="font-size:18px;">download</span> Baixar relatório (HTML)</button>
+            <button sc-camel-on-click="{{ sendDiagnosticoPdf }}" style="background:linear-gradient(135deg,#22c55e,#16a34a); color:#06140d; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:800; padding:11px 18px; border-radius:11px; display:flex; align-items:center; gap:8px;" style-hover="filter:brightness(1.05);"><span class="msym" style="font-size:18px;">picture_as_pdf</span> {{ sendDiagnosticoPdfLabel }}</button>
+            <sc-if value="{{ diagnosticoSentAtLabel }}" hint-placeholder-val="">
+              <span style="font-size:12px; font-weight:700; color:#15803d; background:#f0fdf4; border:1px solid #bbf3ce; padding:6px 12px; border-radius:20px;">Enviado ao cliente em {{ diagnosticoSentAtLabel }}</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ diagnosticoNotice }}" hint-placeholder-val="">
+            <div style="margin-top:12px; font-size:13px; font-weight:600; color:#16211c; background:#f6f9f7; border:1px solid #e3e8e5; border-radius:10px; padding:10px 14px;">{{ diagnosticoNotice }}</div>
+          </sc-if>
           </sc-if>
         </div>
       </sc-if>
@@ -1152,7 +1180,7 @@ const PAY_METHODS = [
 ];
 const DEFAULT_ONBOARDING_STEPS = [
   { step_key: 'contrato', num: 1, title: 'Assinatura do contrato', detail: 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.', icon: 'assignment_turned_in' },
-  { step_key: 'raiox', num: 2, title: 'Formulário de Raio-X', detail: 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.', icon: 'query_stats' },
+  { step_key: 'raiox', num: 2, title: 'Formulário de Raio-X', detail: 'Diagnóstico do negócio (marketing, vendas e evasão), enviado por e-mail (link público, sem precisar logar) 3 minutos após a aprovação do contrato. Ao enviar, o cliente recebe o acesso à plataforma.', icon: 'query_stats' },
   { step_key: 'reuniao', num: 3, title: 'Reunião de onboarding', detail: 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.', icon: 'groups' },
 ];
 
@@ -1169,6 +1197,7 @@ function normalizeClient(r) {
     valor: r.valor, vencimento: r.vencimento, contractLinkSent: r.contract_link_sent,
     cadastroSent: r.cadastro_sent, contractApproved: r.contract_approved, cadastro: r.cadastro || {},
     cadastroToken: r.cadastro_token, raiox: r.raiox || {}, raioxSubmittedAt: r.raiox_submitted_at,
+    raioxToken: r.raiox_token, diagnosticoSentAt: r.diagnostico_sent_at,
   };
 }
 
@@ -1187,7 +1216,8 @@ class Component extends DCLogic {
     planEditIdx: null, showAddClient: false, linkCopied: false,
     mobileNavOpen: false,
     pubCad: {}, pubCadError: '', pubCadSubmitting: false, pubCadDone: false,
-    raiox: {}, raioxFiles: [], raioxFileNames: '', raioxSubmitting: false, raioxError: '',
+    pubRx: {}, pubRxFiles: [], pubRxFileNames: '', pubRxSubmitting: false, pubRxError: '', pubRxDone: false,
+    diagnosticoSending: false, diagnosticoNotice: '',
   };
 
   componentDidMount() {
@@ -1392,9 +1422,7 @@ class Component extends DCLogic {
     await this.loadAll();
     this.setState({
       approveContractLoading: false,
-      addClientNotice: data.emailSent
-        ? 'Contrato aprovado! E-mail de acesso enviado ao cliente.'
-        : 'Contrato aprovado, mas o e-mail de acesso não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + '). Senha temporária: ' + data.tempPassword,
+      addClientNotice: 'Contrato aprovado! O link do formulário de Raio-X será enviado por e-mail ao cliente em alguns minutos.',
     });
   }
 
@@ -1486,28 +1514,46 @@ class Component extends DCLogic {
     });
   }
 
-  // -------------------------------------------------------------- raio-x --
-  setRx(field, e) { this.setState({ raiox: { ...(this.state.raiox || {}), [field]: e.target.value } }); }
-  clickRxFileInput() { const el = document.getElementById('rxFileInput'); if (el) el.click(); }
-  onRxFilesPicked(e) {
+  // ---------------------------------------------------- raio-x (público) --
+  setPubRx(field, e) { this.setState({ pubRx: { ...(this.state.pubRx || {}), [field]: e.target.value } }); }
+  clickPubRxFileInput() { const el = document.getElementById('pubRxFileInput'); if (el) el.click(); }
+  onPubRxFilesPicked(e) {
     const files = Array.from(e.target.files || []);
-    this.setState({ raioxFiles: files, raioxFileNames: files.map((f) => f.name).join(', ') });
+    this.setState({ pubRxFiles: files, pubRxFileNames: files.map((f) => f.name).join(', ') });
   }
-  async submitRaiox() {
-    const c = this.getClients()[this.state.selected];
-    if (!c || !sb) return;
-    this.setState({ raioxSubmitting: true, raioxError: '' });
-    const attachments = [];
-    for (const file of this.state.raioxFiles || []) {
-      const path = this.state.session.user.id + '/raiox-' + Date.now() + '-' + file.name;
-      const { error: upErr } = await sb.storage.from('evidencias').upload(path, file);
-      if (!upErr) attachments.push(path);
+  fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  async submitPublicRaiox(token) {
+    if (!sb) return;
+    this.setState({ pubRxSubmitting: true, pubRxError: '' });
+    const files = [];
+    try {
+      for (const file of this.state.pubRxFiles || []) {
+        const base64 = await this.fileToBase64(file);
+        files.push({ name: file.name, type: file.type, base64 });
+      }
+    } catch (e) {
+      this.setState({ pubRxSubmitting: false, pubRxError: 'Falha ao ler os arquivos selecionados.' });
+      return;
     }
-    const raiox = { ...(this.state.raiox || {}), attachments };
-    const { error } = await sb.from('clients').update({ raiox, raiox_submitted_at: new Date().toISOString() }).eq('id', c.id);
-    if (error) { this.setState({ raioxSubmitting: false, raioxError: error.message }); return; }
-    await this.loadAll();
-    this.setState({ raioxSubmitting: false, raiox: {}, raioxFiles: [], raioxFileNames: '', view: 'projeto' });
+    const { data, error } = await sb.functions.invoke('smart-api', {
+      body: { action: 'submit-raiox', token, raiox: this.state.pubRx || {}, files },
+    });
+    if (error || (data && data.error)) {
+      let msg = (data && data.error) || (error && error.message) || 'Erro ao enviar o Raio-X.';
+      if (error && error.context && typeof error.context.json === 'function') {
+        try { const b = await error.context.json(); if (b && b.error) msg = b.error; } catch (_e) {}
+      }
+      this.setState({ pubRxSubmitting: false, pubRxError: msg });
+      return;
+    }
+    this.setState({ pubRxSubmitting: false, pubRxDone: true, pubRx: {}, pubRxFiles: [], pubRxFileNames: '' });
   }
 
   // ------------------------------------------------------------------ plano --
@@ -1734,6 +1780,65 @@ class Component extends DCLogic {
     };
   }
 
+  downloadDiagnosticoHtml() {
+    const el = document.getElementById('diagnosticoPrintRoot');
+    if (!el) return;
+    const c = this.getClients()[this.state.selected];
+    const name = c ? c.name : 'Cliente';
+    const html =
+      '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">' +
+      '<title>Diagnóstico - ' + name + '</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">' +
+      '<style>*{box-sizing:border-box;}body{font-family:\'Plus Jakarta Sans\',sans-serif;background:#eef1ef;padding:24px;margin:0;}.msym{font-family:\'Material Symbols Rounded\';font-weight:normal;font-style:normal;}</style>' +
+      '</head><body>' + el.outerHTML + '</body></html>';
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'diagnostico-' + name.toLowerCase().replace(/\s+/g, '-') + '.html';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async sendDiagnosticoPdf() {
+    const c = this.getClients()[this.state.selected];
+    const el = document.getElementById('diagnosticoPrintRoot');
+    if (!c || !sb || !el || !window.html2pdf) return;
+    this.setState({ diagnosticoSending: true, diagnosticoNotice: '' });
+    try {
+      const pdfDataUri = await window.html2pdf().set({
+        margin: 10,
+        filename: 'diagnostico.pdf',
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      }).from(el).outputPdf('datauristring');
+      const base64 = pdfDataUri.split(',')[1];
+      const { data, error } = await sb.functions.invoke('smart-api', {
+        body: { action: 'send-diagnostico-pdf', clientId: c.id, pdfBase64: base64, fileName: 'diagnostico-' + c.name + '.pdf' },
+      });
+      if (error || (data && data.error)) {
+        let msg = (data && data.error) || (error && error.message) || 'Erro ao enviar o PDF.';
+        if (error && error.context && typeof error.context.json === 'function') {
+          try { const b = await error.context.json(); if (b && b.error) msg = b.error; } catch (_e) {}
+        }
+        this.setState({ diagnosticoSending: false, diagnosticoNotice: 'Erro: ' + msg });
+        return;
+      }
+      await this.loadAll();
+      this.setState({
+        diagnosticoSending: false,
+        diagnosticoNotice: data.emailSent
+          ? 'PDF enviado ao cliente por e-mail!'
+          : 'PDF gerado, mas o e-mail não foi enviado (' + (data.emailError || 'verifique os secrets do Gmail') + ').',
+      });
+    } catch (e) {
+      this.setState({ diagnosticoSending: false, diagnosticoNotice: 'Erro ao gerar o PDF: ' + ((e && e.message) || e) });
+    }
+  }
+
   buildBoard(clients) {
     const plan = this.getPlan();
     const rows = clients.map((c) => ({
@@ -1778,6 +1883,28 @@ class Component extends DCLogic {
         submitPubCad: () => this.submitPublicCadastro(cadastroToken),
       };
     }
+    const raioxToken = new URLSearchParams(window.location.search).get('raiox');
+    if (raioxToken) {
+      return {
+        isPublicRaiox: true, notLoggedIn: false, isLoggedIn: false,
+        pubRxDone: !!this.state.pubRxDone, pubRxForm: !this.state.pubRxDone,
+        pubRxError: this.state.pubRxError, pubRx: this.state.pubRx || {},
+        pubRxFileNames: this.state.pubRxFileNames,
+        submitPubRxLabel: this.state.pubRxSubmitting ? 'Enviando…' : 'Enviar diagnóstico',
+        setPubRxPeriodo: (e) => this.setPubRx('periodo', e),
+        setPubRxCpl: (e) => this.setPubRx('cpl', e), setPubRxLeadsDesejados: (e) => this.setPubRx('leadsDesejados', e),
+        setPubRxValorInvestido: (e) => this.setPubRx('valorInvestido', e), setPubRxTxConversao: (e) => this.setPubRx('txConversao', e),
+        setPubRxVendasMkt: (e) => this.setPubRx('vendasMkt', e), setPubRxCac: (e) => this.setPubRx('cac', e),
+        setPubRxVisitacao: (e) => this.setPubRx('visitacao', e),
+        setPubRxResultadosRecepcao: (e) => this.setPubRx('resultadosRecepcao', e), setPubRxPerfilColaborador: (e) => this.setPubRx('perfilColaborador', e),
+        setPubRxRotinasComercial: (e) => this.setPubRx('rotinasComercial', e), setPubRxBonificacao: (e) => this.setPubRx('bonificacao', e),
+        setPubRxResultadosProfessor: (e) => this.setPubRx('resultadosProfessor', e), setPubRxFrequenciaAcesso: (e) => this.setPubRx('frequenciaAcesso', e),
+        setPubRxControleFaltosos: (e) => this.setPubRx('controleFaltosos', e), setPubRxControleFrequencia90: (e) => this.setPubRx('controleFrequencia90', e),
+        setPubRxChurn: (e) => this.setPubRx('churn', e),
+        clickPubRxFileInput: () => this.clickPubRxFileInput(), onPubRxFilesPicked: (e) => this.onPubRxFilesPicked(e),
+        submitPubRx: () => this.submitPublicRaiox(raioxToken),
+      };
+    }
     if (!this.state.booted) {
       return { notLoggedIn: false, isLoggedIn: false };
     }
@@ -1813,8 +1940,6 @@ class Component extends DCLogic {
     const client = clients[selectedIdx] || { name: '', initials: '', avatarBg: '', atividade: 'no_prazo', financeiro: 'em_dia', week: 1, totalWeeks: this.getPlan().length || 12, progress: 0, progressPct: '0%', plan: '', startDate: '', consultant: '' };
     const view = this.state.view;
 
-    const raioxPending = isCliente && !!client.contractApproved && !client.raioxSubmittedAt;
-
     const consultorNav = [
       { id: 'dashboard', icon: 'grid_view', label: 'Dashboard' },
       { id: 'clientes', icon: 'groups', label: 'Clientes' },
@@ -1825,7 +1950,6 @@ class Component extends DCLogic {
     const clienteNav = [
       { id: 'projeto', icon: 'track_changes', label: 'Minha Jornada' },
       { id: 'formulario', icon: 'assignment', label: 'Formulário da Semana' },
-      ...(raioxPending ? [{ id: 'raiox', icon: 'query_stats', label: 'Raio-X do negócio', badge: '1' }] : []),
     ];
     const adminNav = [
       { id: 'dashboard', icon: 'grid_view', label: 'Dashboard' },
@@ -1865,7 +1989,6 @@ class Component extends DCLogic {
       financeiro: { t: 'Financeiro', i: 'payments', s: 'Pagamento em dia, inadimplência e régua de cobrança' },
       auditoria: { t: 'Auditoria', i: 'folder_open', s: isConsultor ? 'Pasta de cada cliente — textos e áudios registrados' : 'Seu histórico registrado' },
       cadastro: { t: 'Ficha do contrato', i: 'contract_edit', s: 'Dados para geração do contrato' },
-      raiox: { t: 'Raio-X do negócio', i: 'query_stats', s: 'Diagnóstico de marketing, vendas e evasão' },
       diagnostico: { t: 'Diagnóstico · Raio-X', i: 'query_stats', s: 'Uso interno — apresentar na reunião de onboarding' },
     };
     const tt = titles[view] || titles.dashboard;
@@ -1984,9 +2107,8 @@ class Component extends DCLogic {
       showDashExtras: view === 'dashboard', showTable: view === 'clientes',
       isProjeto: view === 'projeto', isJornada: view === 'jornada', isFormulario: view === 'formulario',
       isFinanceiro: view === 'financeiro', isAuditoria: view === 'auditoria', isCadastro: view === 'cadastro',
-      isRaiox: view === 'raiox' && isCliente,
       isDiagnostico: view === 'diagnostico' && isConsultor,
-      raioxPending, goRaiox: () => this.go('raiox'), goDiagnostico: () => this.go('diagnostico'),
+      goDiagnostico: () => this.go('diagnostico'),
       raioxDone: !!client.raioxSubmittedAt,
 
       statCards, clients, clientCount: clients.length,
@@ -2075,23 +2197,12 @@ class Component extends DCLogic {
       clickFileInput: () => this.clickFileInput(), onFilesPicked: (e) => this.onFilesPicked(e), formFileNames: this.state.formFileNames,
       formSent: this.state.formSent, nextWeekNum, goFormulario: () => this.goFormulario(),
 
-      rx: this.state.raiox || {},
-      setRxPeriodo: (e) => this.setRx('periodo', e),
-      setRxCpl: (e) => this.setRx('cpl', e), setRxLeadsDesejados: (e) => this.setRx('leadsDesejados', e),
-      setRxValorInvestido: (e) => this.setRx('valorInvestido', e), setRxTxConversao: (e) => this.setRx('txConversao', e),
-      setRxVendasMkt: (e) => this.setRx('vendasMkt', e), setRxCac: (e) => this.setRx('cac', e),
-      setRxVisitacao: (e) => this.setRx('visitacao', e),
-      setRxResultadosRecepcao: (e) => this.setRx('resultadosRecepcao', e), setRxPerfilColaborador: (e) => this.setRx('perfilColaborador', e),
-      setRxRotinasComercial: (e) => this.setRx('rotinasComercial', e), setRxBonificacao: (e) => this.setRx('bonificacao', e),
-      setRxResultadosProfessor: (e) => this.setRx('resultadosProfessor', e), setRxFrequenciaAcesso: (e) => this.setRx('frequenciaAcesso', e),
-      setRxControleFaltosos: (e) => this.setRx('controleFaltosos', e), setRxControleFrequencia90: (e) => this.setRx('controleFrequencia90', e),
-      setRxChurn: (e) => this.setRx('churn', e),
-      clickRxFileInput: () => this.clickRxFileInput(), onRxFilesPicked: (e) => this.onRxFilesPicked(e),
-      raioxFileNames: this.state.raioxFileNames, raioxError: this.state.raioxError,
-      submitRaiox: () => this.submitRaiox(),
-      submitRaioxLabel: this.state.raioxSubmitting ? 'Enviando…' : 'Enviar diagnóstico',
-
       diagnostico: this.buildDiagnostico(client),
+      downloadDiagnosticoHtml: () => this.downloadDiagnosticoHtml(),
+      sendDiagnosticoPdf: () => this.sendDiagnosticoPdf(),
+      sendDiagnosticoPdfLabel: this.state.diagnosticoSending ? 'Enviando…' : 'Enviar PDF ao cliente',
+      diagnosticoSentAtLabel: client.diagnosticoSentAt ? fmtDate(client.diagnosticoSentAt) : '',
+      diagnosticoNotice: this.state.diagnosticoNotice || '',
 
       finStats, finClients: clients, cobranca,
       auditFolders,
