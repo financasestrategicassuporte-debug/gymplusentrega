@@ -922,8 +922,26 @@
             <div style="background:#dcfce7; border:1px solid #bbf3ce; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px; color:#15803d; font-weight:700; font-size:14px; margin-bottom:16px;"><span class="msym" style="font-size:20px;">task_alt</span> Plano salvo! Todos os clientes passam a seguir este modelo padronizado.</div>
           </sc-if>
 
+          <div style="margin-bottom:26px;">
+            <div style="font-size:12px; font-weight:800; color:#6d28d9; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">Etapas de onboarding · antes da jornada semanal</div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ onboardingStepsRows }}" as="o" hint-placeholder-count="3">
+                <div style="background:#faf9ff; border:1px solid #e5e0fa; border-radius:14px; padding:16px 18px;">
+                  <div style="display:flex; align-items:flex-start; gap:14px;">
+                    <div style="width:40px; height:40px; border-radius:11px; background:#ede9fe; border:1.5px solid #ddd6fe; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span class="msym" style="font-size:19px; color:#6d28d9;">{{ o.icon }}</span></div>
+                    <div style="flex:1;">
+                      <div style="font-size:11px; font-weight:800; color:#6d28d9; text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">Onboarding · Etapa {{ o.num }}</div>
+                      <input value="{{ o.title }}" sc-camel-on-input="{{ o.setTitle }}" style="width:100%; border:1px solid #d5ddd8; border-radius:9px; padding:9px 12px; font-family:inherit; font-size:14px; font-weight:700; color:#16211c; background:#fff; margin-bottom:8px;" style-focus="border-color:#22c55e; outline:none;">
+                      <textarea value="{{ o.detail }}" sc-camel-on-input="{{ o.setDetail }}" style="width:100%; min-height:56px; resize:vertical; border:1px solid #d5ddd8; border-radius:9px; padding:9px 12px; font-family:inherit; font-size:13px; color:#4a574f; background:#fff;" style-focus="border-color:#22c55e; outline:none;"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-            <span style="font-size:12px; font-weight:700; color:#8a978f;">{{ planCount }} semanas no plano</span>
+            <span style="font-size:12px; font-weight:700; color:#8a978f;">Jornada semanal · {{ planCount }} semanas no plano</span>
             <button sc-camel-on-click="{{ savePlan }}" style="background:#123328; color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:800; padding:10px 18px; border-radius:11px; display:flex; align-items:center; gap:8px;" style-hover="background:#1c4a3a;"><span class="msym" style="font-size:18px;">save</span> Salvar plano padrão</button>
           </div>
 
@@ -1132,6 +1150,11 @@ const PAY_METHODS = [
   { icon: 'receipt_long', label: 'Boleto' },
   { icon: 'account_balance', label: 'Transferência' },
 ];
+const DEFAULT_ONBOARDING_STEPS = [
+  { step_key: 'contrato', num: 1, title: 'Assinatura do contrato', detail: 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.', icon: 'assignment_turned_in' },
+  { step_key: 'raiox', num: 2, title: 'Formulário de Raio-X', detail: 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.', icon: 'query_stats' },
+  { step_key: 'reuniao', num: 3, title: 'Reunião de onboarding', detail: 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.', icon: 'groups' },
+];
 
 function fmtDate(iso) {
   if (!iso) return '';
@@ -1230,12 +1253,14 @@ class Component extends DCLogic {
     if (!sb || !this.state.profile) return;
     const isCliente = this.state.profile.role === 'cliente';
     const planP = sb.from('plan_weeks').select('*').order('num');
+    const onboardingStepsP = sb.from('onboarding_steps').select('*').order('num');
     const clientsP = isCliente
       ? sb.from('clients').select('*').eq('user_id', this.state.session.user.id)
       : sb.from('clients').select('*').order('created_at');
-    const [planR, clientsR] = await Promise.all([planP, clientsP]);
+    const [planR, onboardingStepsR, clientsR] = await Promise.all([planP, onboardingStepsP, clientsP]);
     const next = {
       planWeeks: (planR.data || []),
+      onboardingSteps: (onboardingStepsR.data && onboardingStepsR.data.length) ? onboardingStepsR.data : DEFAULT_ONBOARDING_STEPS,
       clients: (clientsR.data || []).map(normalizeClient),
     };
     if (!isCliente) {
@@ -1264,6 +1289,10 @@ class Component extends DCLogic {
 
   getClients() { return this.state.clients || []; }
   getPlan() { return (this.state.planWeeks || []).slice().sort((a, b) => a.num - b.num); }
+  getOnboardingSteps() {
+    const rows = (this.state.onboardingSteps && this.state.onboardingSteps.length) ? this.state.onboardingSteps : DEFAULT_ONBOARDING_STEPS;
+    return rows.slice().sort((a, b) => a.num - b.num);
+  }
   weekTitle(num) { const w = this.getPlan()[num - 1]; return w ? w.title : ('Semana ' + num); }
   defaultForm() { return [{ label: 'Como você realizou a atividade?', type: 'long' }, { label: 'Anexe as evidências (prints, planilha, links)', type: 'file' }]; }
 
@@ -1489,8 +1518,25 @@ class Component extends DCLogic {
     }));
     await sb.from('plan_weeks').delete().not('id', 'is', null);
     if (rows.length) await sb.from('plan_weeks').insert(rows);
-    const { data } = await sb.from('plan_weeks').select('*').order('num');
-    this.setState({ planWeeks: data || [], planSaved: true });
+    const onboardingRows = this.getOnboardingSteps().map((s) => ({ step_key: s.step_key, num: s.num, title: s.title, detail: s.detail }));
+    await sb.from('onboarding_steps').upsert(onboardingRows, { onConflict: 'step_key' });
+    const [{ data }, { data: obsData }] = await Promise.all([
+      sb.from('plan_weeks').select('*').order('num'),
+      sb.from('onboarding_steps').select('*').order('num'),
+    ]);
+    this.setState({
+      planWeeks: data || [],
+      onboardingSteps: (obsData && obsData.length) ? obsData : onboardingRows,
+      planSaved: true,
+    });
+  }
+  editOnboardingStepField(idx, field, val) {
+    const steps = this.getOnboardingSteps().map((s) => ({ ...s }));
+    if (!steps[idx]) return;
+    steps[idx][field] = val;
+    this.setState({ onboardingSteps: steps, planSaved: false });
+    clearTimeout(this._planTimer);
+    this._planTimer = setTimeout(() => this.persistPlan(), 900);
   }
   updatePlan(fn) {
     const cur = this.getPlan().map((w) => ({
@@ -1616,10 +1662,14 @@ class Component extends DCLogic {
         : sub('rule', '#b45309', '#16211c', 'Contrato gerado manualmente e assinado? Validar aqui', okBtn),
     ];
 
+    const steps = this.getOnboardingSteps();
+    const stepContrato = steps[0] || DEFAULT_ONBOARDING_STEPS[0];
+    const stepRaiox = steps[1] || DEFAULT_ONBOARDING_STEPS[1];
+    const stepReuniao = steps[2] || DEFAULT_ONBOARDING_STEPS[2];
     const items = [
-      { phase: 'ONBOARDING · ETAPA 1', title: 'Assinatura do contrato', detail: 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.', st: contratoDone ? done : doing, hasSub: true, substeps: contractSubs },
-      { phase: 'ONBOARDING · ETAPA 2', title: 'Formulário de Raio-X', detail: 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.', st: raioxDone ? done : (contratoDone ? doing : locked) },
-      { phase: 'ONBOARDING · ETAPA 3', title: 'Reunião de onboarding', detail: 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.', st: raioxDone ? doing : locked },
+      { phase: 'ONBOARDING · ETAPA 1', title: stepContrato.title, detail: stepContrato.detail, st: contratoDone ? done : doing, hasSub: true, substeps: contractSubs },
+      { phase: 'ONBOARDING · ETAPA 2', title: stepRaiox.title, detail: stepRaiox.detail, st: raioxDone ? done : (contratoDone ? doing : locked) },
+      { phase: 'ONBOARDING · ETAPA 3', title: stepReuniao.title, detail: stepReuniao.detail, st: raioxDone ? doing : locked },
     ];
     return items.map((i) => ({ phase: i.phase, title: i.title, detail: i.detail, icon: i.st.icon, dotBg: i.st.dotBg, dotBorder: i.st.dotBorder, dotColor: i.st.dotColor, lineColor: i.st.lineColor, statusLabel: i.st.statusLabel, statusBg: i.st.statusBg, statusColor: i.st.statusColor, titleColor: i.st.titleColor, hasSub: !!i.hasSub, substeps: i.substeps || [] }));
   }
@@ -1910,6 +1960,11 @@ class Component extends DCLogic {
       })),
       planCount: this.getPlan().length, planSaved: this.state.planSaved,
       addWeek: () => this.addWeek(), savePlan: () => this.savePlan(),
+      onboardingStepsRows: this.getOnboardingSteps().map((s, idx) => ({
+        num: s.num, title: s.title, detail: s.detail, icon: s.icon || (DEFAULT_ONBOARDING_STEPS[idx] || {}).icon || 'flag',
+        setTitle: (e) => this.editOnboardingStepField(idx, 'title', e.target.value),
+        setDetail: (e) => this.editOnboardingStepField(idx, 'detail', e.target.value),
+      })),
 
       isAutomacoes: view === 'automacoes' && isAdmin,
       flowSteps, autoRules,
