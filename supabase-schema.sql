@@ -127,6 +127,30 @@ create policy "plan_weeks_write_staff"
   with check (public.is_staff());
 
 -- ---------------------------------------------------------------------------
+-- ONBOARDING_STEPS (as 3 etapas fixas antes da jornada semanal: contrato,
+-- Raio-X, reunião — editáveis pelo admin na mesma tela do Plano de Ação)
+-- ---------------------------------------------------------------------------
+create table if not exists public.onboarding_steps (
+  id uuid primary key default gen_random_uuid(),
+  step_key text not null unique,
+  num int not null,
+  title text not null,
+  detail text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.onboarding_steps enable row level security;
+
+create policy "onboarding_steps_select_authenticated"
+  on public.onboarding_steps for select
+  using (auth.uid() is not null);
+
+create policy "onboarding_steps_write_staff"
+  on public.onboarding_steps for all
+  using (public.is_staff())
+  with check (public.is_staff());
+
+-- ---------------------------------------------------------------------------
 -- AUTOMATIONS (regras de disparo automático - admin)
 -- ---------------------------------------------------------------------------
 create table if not exists public.automations (
@@ -294,6 +318,14 @@ select * from (values
   (12,'Auditoria final & escala','Revisão geral e plano de escala.','["email","whats"]'::jsonb,'[{"label":"Como você realizou a atividade?","type":"long"},{"label":"Anexe as evidências (prints, planilha, links)","type":"file"}]'::jsonb)
 ) as v(num,title,detail,channels,form)
 where not exists (select 1 from public.plan_weeks);
+
+insert into public.onboarding_steps (step_key, num, title, detail)
+select * from (values
+  ('contrato', 1, 'Assinatura do contrato', 'Cliente preenche os dados, nosso time gera o contrato manualmente e o consultor valida a assinatura.'),
+  ('raiox', 2, 'Formulário de Raio-X', 'Diagnóstico do negócio (marketing, vendas e evasão) enviado por e-mail 3 minutos após a liberação do acesso.'),
+  ('reuniao', 3, 'Reunião de onboarding', 'Apresentação do Raio-X e alinhamento com o consultor antes de começar o plano semanal.')
+) as v(step_key, num, title, detail)
+where not exists (select 1 from public.onboarding_steps);
 
 insert into public.cobranca_steps (step, when_text, done, sort_order)
 select * from (values
